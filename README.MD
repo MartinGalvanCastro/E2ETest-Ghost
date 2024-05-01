@@ -41,7 +41,7 @@ https://github.com/MartinGalvanCastro/E2ETest-Ghost/wiki
     yarn cucumber # Correr sin abrir navegador
     yarn cucumber:headed # Correr abriendo un navegador
     ```
----
+  
 - Kraken:
   - Requerimientos:
   - Como correr?
