@@ -13,6 +13,7 @@ import type {
   Page,
   PlaywrightTestOptions,
 } from "@playwright/test";
+import "dotenv/config";
 
 export interface CucumberWorldConstructorParams {
   parameters: { [key: string]: string };
@@ -23,6 +24,8 @@ export interface CucumberWorldConstructorParams {
  */
 export interface IPlaywrightWorld extends World {
   page: Page;
+  adminUser: string;
+  adminPassword: string;
   playwrightOptions?: PlaywrightTestOptions;
   init(): Promise<void>;
   teardown(): Promise<void>;
@@ -37,6 +40,8 @@ class PlaywrightWorld extends World implements IPlaywrightWorld {
   browser!: Browser;
   browserContext!: BrowserContext;
   page!: Page;
+  adminUser = process.env.ADMIN_USER!;
+  adminPassword = process.env.ADMIN_PASS!;
 
   constructor(options: IWorldOptions) {
     super(options);
