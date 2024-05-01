@@ -5,3 +5,12 @@ URL del despligue: https://ghost-al42.onrender.com
 
 ## Funcionalidades y Escenarios desarolladas:
 https://github.com/MartinGalvanCastro/E2ETest-Ghost/wiki
+
+
+## Versiones
+- Playwright: https://github.com/MartinGalvanCastro/E2ETest-Ghost/tree/playwright
+- Kraken: https://github.com/MartinGalvanCastro/E2ETest-Ghost/tree/kraken
+
+## Releases:
+- Playwright:
+- Kraken:
