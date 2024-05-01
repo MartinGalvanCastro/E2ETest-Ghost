@@ -42,8 +42,8 @@ https://github.com/MartinGalvanCastro/E2ETest-Ghost/wiki
     yarn cucumber:headed # Correr abriendo un navegador
     ```
 
-### Kraken:
-#### Requerimientos:
-#### Como correr?
+- Kraken:
+  - Requerimientos:
+  - Como correr?
 
 ## Release:
