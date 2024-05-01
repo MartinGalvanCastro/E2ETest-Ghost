@@ -9,12 +9,16 @@
     "@types/node": "^20.12.7",
     "typescript": "^5.4.5"
   },
+  "engines": {
+    "node": ">=20.12.2"
+  },
   "devDependencies": {
     "@cucumber/cucumber": "^10.6.0",
     "@playwright/test": "^1.43.1",
     "ts-node": "^10.9.2"
   },
   "scripts": {
-    "cucumber": "cucumber-js"
+    "cucumber": "cucumber-js",
+    "cucumber:headed": "HEAD=1 cucumber-js"
   }
 }
