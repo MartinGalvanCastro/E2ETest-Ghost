@@ -24,8 +24,9 @@ export interface CucumberWorldConstructorParams {
  */
 export interface IPlaywrightWorld extends World {
   page: Page;
-  adminUser: string;
-  adminPassword: string;
+  baseUrl:string;
+  adminUser?: string;
+  adminPassword?: string;
   playwrightOptions?: PlaywrightTestOptions;
   init(): Promise<void>;
   teardown(): Promise<void>;
@@ -40,8 +41,7 @@ class PlaywrightWorld extends World implements IPlaywrightWorld {
   browser!: Browser;
   browserContext!: BrowserContext;
   page!: Page;
-  adminUser = process.env.ADMIN_USER!;
-  adminPassword = process.env.ADMIN_PASS!;
+
 
   constructor(options: IWorldOptions) {
     super(options);
@@ -74,7 +74,7 @@ class PlaywrightWorld extends World implements IPlaywrightWorld {
 }
 
 setWorldConstructor(PlaywrightWorld);
-setDefaultTimeout(5000);
+setDefaultTimeout(10000);
 
 Before(async function (this: IPlaywrightWorld) {
   await this.init();
