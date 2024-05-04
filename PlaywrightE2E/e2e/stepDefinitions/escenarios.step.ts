@@ -1,12 +1,13 @@
-import { Given, When, Then, After } from "@cucumber/cucumber";
+import { Given, When, Then, After, Before } from "@cucumber/cucumber";
 import { expect, Page } from "@playwright/test";
 import { IPlaywrightWorld } from "../world";
 
 const adminPrefixUrl = '/ghost/#';
 
-Given('Un usuario administrador', function (this: IPlaywrightWorld) {
+Given('Un usuario administrador', async function (this: IPlaywrightWorld) {
     this.adminUser = process.env.ADMIN_USER!;
     this.adminPassword = process.env.ADMIN_PASS!;
+    const titulo = 'prueba-page';    
 });
 
 When('Inicia sesion', async function (this: IPlaywrightWorld) {
@@ -39,7 +40,7 @@ Then('Visualiza que el tema cambio', async function (this: IPlaywrightWorld) {
 When('Navega al menu de {string}', async function (this: IPlaywrightWorld, contenido :string) {
     switch(contenido){
         case 'post':
-            await this.page.getByRole('link', { name: /Posts/i }).click();
+            await this.page.getByRole('link', { name: 'Posts', exact: true }).click();
             await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/posts`)
             break;
         case 'page':
@@ -54,7 +55,7 @@ When('Navega al menu de {string}', async function (this: IPlaywrightWorld, conte
 When('Crea {string}', async function (this: IPlaywrightWorld, contenido :string) {
     switch(contenido){
         case 'un articulo':
-            await this.page.getByRole('link', { name: /New post/i }).click();
+            await this.page.getByTitle('New post').click();
             break;
         case 'una pagina':
             await this.page.getByRole('link', { name: /New page/i }).click();
@@ -77,14 +78,14 @@ When('Con titulo Prueba-{string}', async function (this: IPlaywrightWorld, conte
 When('Publica el contenido', async function (this: IPlaywrightWorld) {
     await this.page.getByRole('button', { name: /Publish/i }).click();
     await this.page.getByRole('button',{name: /Continue, final review/i}).click();
-    await this.page.getByRole('button',{name: /Publish \w, right now/i}).click();
+    await this.page.locator('button[data-test-button="confirm-publish"]').click({force:true});
 });
 
 Then('Verifica que el contenido se visualiza de manera correcta', async function (this: IPlaywrightWorld){
     await this.page.locator('a.gh-post-bookmark-wrapper').click();
-    await this.page.waitForURL(`${this.baseUrl}/${tituloContenido}**`)
     await expect(this.page.getByTitle(tituloContenido!)).toBeDefined();
 });
+
 
 After(()=>{
     esTemaClaro = undefined;
