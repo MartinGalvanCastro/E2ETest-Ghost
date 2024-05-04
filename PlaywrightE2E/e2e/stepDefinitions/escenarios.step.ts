@@ -6,8 +6,7 @@ const adminPrefixUrl = '/ghost/#';
 
 Given('Un usuario administrador', async function (this: IPlaywrightWorld) {
     this.adminUser = process.env.ADMIN_USER!;
-    this.adminPassword = process.env.ADMIN_PASS!;
-    const titulo = 'prueba-page';    
+    this.adminPassword = process.env.ADMIN_PASS!;  
 });
 
 When('Inicia sesion', async function (this: IPlaywrightWorld) {
@@ -112,7 +111,34 @@ Then('Verifica que la etiqueta se cree correctamente',async function (this: IPla
 
 })
 
+When('Programa el contenido', async function (this: IPlaywrightWorld){
+    await this.page.getByRole('button', { name: /Publish/i }).click();
+    await this.page.getByRole('button',{name:'Right now'}).click();
+    await this.page.getByText('Schedule for later').click({force:true});
+    const timeValue = await this.page.locator('input[data-test-date-time-picker-time-input]').inputValue();
+    const [hour,minute] = timeValue.split(":").map(parseInt);
+    const newTime = `${hour < 10? `0${hour}`:hour}:${minute}`;
+    await this.page.locator('input[data-test-date-time-picker-time-input]').fill(newTime);
+    await this.page.getByRole('button',{name: /Continue, final review/i}).click();
+    await this.page.locator('button[data-test-button="confirm-publish"]').click({force:true});
+    await expect(this.page.locator('a.gh-post-bookmark-wrapper')).toBeVisible();
+});
+
+When('Vuelve al dashboard', async function (this: IPlaywrightWorld){
+    await this.page.goto('/ghost');
+})
+
+Then('Visualiza que el contenido se ha programado correctamente',async function (this: IPlaywrightWorld){
+    console.log(tituloContenido)
+    let locators = await this.page.getByText(tituloContenido!).all();
+    locators = locators.filter(async (locator)=>{
+        return await locator.getByText('Scheduled');
+    });
+    expect(locators.length).toBeGreaterThan(0);
+});
+
 After(()=>{
     esTemaClaro = undefined;
     tituloContenido = undefined;
+    randomTagName = undefined;
 })

@@ -36,3 +36,19 @@ Feature: Escearios
             | una pagina      | page |
             | un articulo     | post |
 
+    Scenario Outline: Iniciar sesion - programar un contenido - validar que se programe correctamente
+            Given Un usuario administrador
+            When Inicia sesion
+            Then Visualiza el dashboard de administrador
+            When Navega al menu de '<menu>'
+            And Crea '<nuevo-contenido>'
+            And Con titulo Prueba-'<menu>'
+            And Programa el contenido
+            And Vuelve al dashboard
+            And Navega al menu de '<menu>'
+            Then Visualiza que el contenido se ha programado correctamente
+
+        Examples:
+            | nuevo-contenido | menu |
+            | una pagina      | page |
+            | un articulo     | post |
