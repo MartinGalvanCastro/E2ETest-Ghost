@@ -1,0 +1,26 @@
+{
+  "name": "playwright-e2e",
+  "version": "1.0.0",
+  "description": "Playwright test in ghost",
+  "main": "index.js",
+  "repository": "https://github.com/MartinGalvanCastro/E2ETest-Ghost/tree/playwright/PlaywrightE2E",
+  "license": "MIT",
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "@types/node": "^20.12.7",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=20.12.2"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^10.6.0",
+    "@playwright/test": "^1.43.1",
+    "ts-node": "^10.9.2"
+  },
+  "scripts": {
+    "cucumber": "cucumber-js",
+    "cucumber:headed": "HEAD=1 cucumber-js"
+  }
+}
