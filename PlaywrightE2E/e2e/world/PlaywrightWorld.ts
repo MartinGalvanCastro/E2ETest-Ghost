@@ -14,6 +14,8 @@ import type {
   PlaywrightTestOptions,
 } from "@playwright/test";
 import "dotenv/config";
+import { fa, Faker, faker } from "@faker-js/faker";
+
 
 export interface CucumberWorldConstructorParams {
   parameters: { [key: string]: string };
@@ -28,6 +30,7 @@ export interface IPlaywrightWorld extends World {
   adminUser?: string;
   adminPassword?: string;
   playwrightOptions?: PlaywrightTestOptions;
+  dataGenerator:Faker;
   init(): Promise<void>;
   teardown(): Promise<void>;
 }
@@ -41,10 +44,13 @@ class PlaywrightWorld extends World implements IPlaywrightWorld {
   browser!: Browser;
   browserContext!: BrowserContext;
   page!: Page;
+  dataGenerator!:Faker;
 
 
   constructor(options: IWorldOptions) {
     super(options);
+    faker.seed(100);
+    this.dataGenerator = faker;
   }
 
   /**

@@ -6,6 +6,7 @@
   "repository": "https://github.com/MartinGalvanCastro/E2ETest-Ghost/tree/playwright/PlaywrightE2E",
   "license": "MIT",
   "dependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@types/node": "^20.12.7",
     "dotenv": "^16.4.5",
     "typescript": "^5.4.5"

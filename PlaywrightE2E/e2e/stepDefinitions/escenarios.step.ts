@@ -47,6 +47,10 @@ When('Navega al menu de {string}', async function (this: IPlaywrightWorld, conte
             await this.page.getByRole('link', { name: /Pages/i }).click();
             await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/pages`)
             break;
+        case 'etiqueta':
+            await this.page.getByRole('link', { name: 'Tags', exact: true }).click();
+            await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/tags`)
+            break;
         default:
             throw new Error(`No se reconoce el contenido ${contenido}`);
     }
@@ -56,14 +60,20 @@ When('Crea {string}', async function (this: IPlaywrightWorld, contenido :string)
     switch(contenido){
         case 'un articulo':
             await this.page.getByTitle('New post').click();
+            await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/editor/**`);
             break;
         case 'una pagina':
             await this.page.getByRole('link', { name: /New page/i }).click();
+            await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/editor/**`);
+            break;
+        case 'una etiqueta':
+            await this.page.getByRole('link',{name:'New tag'}).click();
+            await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/tags/new`);
             break;
         default:
             throw new Error(`No se reconoce el contenido ${contenido}`);
     }
-    await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/editor/**`)
+    
 });
 
 let tituloContenido:string|undefined;
@@ -86,6 +96,21 @@ Then('Verifica que el contenido se visualiza de manera correcta', async function
     await expect(this.page.getByTitle(tituloContenido!)).toBeDefined();
 });
 
+let randomTagName:string|undefined;
+When('Tiene nombre aleatorio', async function (this: IPlaywrightWorld){
+    randomTagName = this.dataGenerator.lorem.words(3)
+    await this.page.getByLabel('Name').fill(randomTagName);
+});
+
+Then('Verifica que la etiqueta se cree correctamente',async function (this: IPlaywrightWorld){
+    expect(randomTagName).toBeDefined();
+    await this.page.getByRole('button',{name:'Save'}).click();
+    await this.page.waitForTimeout(2000);
+    await this.page.getByRole('link', { name: 'Tags'}).first().click();
+    await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/tags`);
+    await expect(this.page.getByText(randomTagName!)).toBeDefined();
+
+})
 
 After(()=>{
     esTemaClaro = undefined;
