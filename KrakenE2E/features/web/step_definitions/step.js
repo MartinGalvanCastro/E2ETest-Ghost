@@ -1,7 +1,11 @@
 const { Given, When, Then } = require('@cucumber/cucumber');
 const data = require('../../../properties.json');
+const { faker } = require("@faker-js/faker")
+const { getByText } = require("@testing-library/dom");
 
 const adminPrefix = '/ghost/#';
+
+
 
 When('Inicia sesion', async function () {
     await this.driver.$('#identification').setValue(data.USER);
@@ -11,6 +15,7 @@ When('Inicia sesion', async function () {
 
 Then('Visualiza el dashboard de administrador', async function () {
     let element = await this.driver.$('.gh-dashboard-zero-message');
+    await this.driver.pause(500);
     return await element;
 });
 
@@ -43,6 +48,9 @@ When('Navega al menu de {string}', async function (menu) {
         case 'etiqueta':
             await this.driver.$('[data-test-nav=tags]').click();
             break;
+        case 'Members':
+            await this.driver.$('[data-test-nav=members]').click();
+            break;
         default:
             throw new Error(`No se reconoce el contenido ${contenido}`);
     }
@@ -59,143 +67,188 @@ When('Crea {string}', async function (contenido) {
         case 'una etiqueta':
             await this.driver.$('.ember-view.gh-btn.gh-btn-primary').click();
             break;
+        case 'un miembro':
+            await this.driver.$('[data-test-new-member-button]').click();
+            break;
         default:
             throw new Error(`No se reconoce el contenido ${contenido}`);
     }
 });
 
+let tituloContenido = '';
+let randomMemberName = '';
 When('Con titulo Prueba-{string}', async function (titulo) {
-    await this.driver.$('[data-test-editor-title-input]').setValue(`Prueba-${titulo}`);
-    let clickP = this.driver.$('[data-koenig-dnd-droppable=true]');
-    await clickP.click();
-    let element = await this.driver.$('[data-koenig-dnd-droppable=true]');
-    await this.driver.pause(1000);
-    return await element.setValue(`Prueba-${titulo}`);
+    tituloContenido = `Prueba-${titulo}`;
+    switch (titulo) {
+        case 'Members':
+            await this.driver.pause(1000);
+            randomMemberName = faker.person.fullName();
+            await this.driver.$('[data-test-input=member-name]').setValue(randomMemberName);
+            await this.driver.$('[data-test-input=member-email]').setValue(faker.internet.email());
+            await this.driver.$('[data-test-button=save').click();
+            await this.driver.pause(3000);
+            await this.driver.$('[data-test-nav=members]').click();
+            await this.driver.pause(2000);
+            await this.driver.$('[data-test-nav=members]').click();
+            await this.driver.pause(1000);
+            break;
+
+        default:
+            await this.driver.$('[data-test-editor-title-input]').setValue(tituloContenido);
+            let clickP = this.driver.$('[data-koenig-dnd-droppable=true]');
+            await clickP.click();
+            let element = await this.driver.$('[data-koenig-dnd-droppable=true]');
+            await this.driver.pause(1000);
+            await element.setValue(tituloContenido);
+            break;
+    }
 });
 
 When('Publica el contenido', async function () {
-    await this.driver.$('[data-test-button=publish-flow').click();
-    await this.driver.$('[data-test-button=continue').click();
+    await this.driver.$('[data-test-button=publish-flow]').click();
+    await this.driver.pause(500);
+    await this.driver.$('[data-test-button=continue]').click();
     return await this.driver.$('[data-test-button=confirm-publish').click();
-    // return await this.driver.$('[data-test-button=close-publish-flow]').click();
 });
 
 Then('Verifica que el contenido se visualiza de manera correcta', async function () {
     let postCreated = await this.driver.$('.gh-post-bookmark');
+
     return postCreated.click();
 });
 
+let randomTagName = '';
+When('Tiene nombre aleatorio', async function () {
+    let element = await this.driver.$('[data-test-input=tag-name]');
+    randomTagName = faker.lorem.word(3);
+    await this.driver.pause(200);
+    return await element.setValue(randomTagName);
+});
 
-// When('I enter login email {kraken-string}', async function (value) {
-//     let element = await this.driver.$('.gh-input.email');
-//     return await element.setValue(value);
-// });
+When('Verifica que la etiqueta se cree correctamente', async function () {
+    let element = await this.driver.$('[data-test-button=save]');
+    await element.click();
+    await this.driver.pause(500);
+    await this.driver.$('[data-test-nav=tags]').click();
+    let tagCreated = await this.driver.$$('h3').find((element) => element.textContent === randomTagName);
 
-// When('I enter login password {kraken-string}', async function (value) {
-//     let element = await this.driver.$('.gh-input.password');
-//     return await element.setValue(value);
-// });
+    if (tagCreated) {
+        await this.driver.pause(500);
+        return expect(tagCreated).toBeTrue;
+    }
+}
+);
 
-// Then('I submit login', async function () {
-//     let element = await this.driver.$('[data-test-button=sign-in]');
-//     return await element.click();
-// });
+When('Programa el contenido', async function () {
+    await this.driver.$('[data-test-psm-trigger]').click();
+    let timeValue = await this.driver.$('[data-test-date-time-picker-time-input]').getValue();
+    const [hour, minute] = timeValue.split(":").map(str => parseInt(str));
+    const newTime = `${hour < 10 ? `0${hour}` : hour}:${minute < 10 ? `0${minute}` : minute}`;
+    await this.driver.$('[data-test-date-time-picker-time-input]').setValue(newTime);
+    await this.driver.$('[data-test-button=publish-flow]').click();
+    await this.driver.pause(500);
+    await this.driver.$('[data-test-button=continue').click();
+    return await this.driver.$('[data-test-button=confirm-publish').click();
+});
 
-// Then('I select post nav', function () {
-//     let element = this.driver.$('[data-test-nav=posts]');
-//     return element.click();
-// });
+When('Vuelve al dashboard', async function () {
+    await this.driver.$('[data-test-link=dashboard]').click();
+    await this.driver.pause(500);
+});
 
-// Then('I create new Post', function () {
-//     let element = this.driver.$('[data-test-new-post-button]');
-//     return element.click();
-// });
+Then('Visualiza que el contenido se ha programado correctamente', async function () {
+    await this.driver.$('[data-test-nav=posts]').click();
+    await this.driver.pause(500);
+    let postCreated = await this.driver.$$('h3').find((element) => element.textContent === tituloContenido);
+    if (postCreated) {
+        await this.driver.pause(500);
+        return expect(postCreated).toBeTrue;
+    }
+});
 
-// When('I write new title post {kraken-string}', async function (value) {
-//     let element = await this.driver.$('[data-test-editor-title-input]');
-//     return await element.setValue(value);
-// });
+When('Cambia acceso', async function () {
+    await this.driver.$('[data-test-nav=posts]').click();
+    await this.driver.pause(500);
+    let posts = await this.driver.$$('h3');
+    let postCreated;
+    for (let post of posts) {
+        let text = await post.getText();
+        if (text === tituloContenido) {
+            postCreated = post;
+            break;
+        }
+    }
+    await postCreated.click();
+    await this.driver.pause(500);
+    await this.driver.$('[data-test-psm-trigger]').click();
+    await this.driver.$('.gh-select').click();
+    await this.driver.pause(2000);
+    let options = await this.driver.$$('option');
+    let optionSelected;
+    for (let option of options) {
+        let text = await option.getValue();
+        if (text === 'members') {
+            optionSelected = option;
+            break;
+        }
+    }
+    await optionSelected.click();
+    await this.driver.pause(500);
+    await this.driver.$('[data-test-button=publish-save]').click();
+});
 
-// Then('I click on paragraph content', function () {
-//     let element = this.driver.$('[data-koenig-dnd-droppable=true]');
-//     return element.click();
-// });
+Then('Visualizar contenido de miembros en posts', async function () {
+    await this.driver.url('https://ghost-al42.onrender.com/ghost/#/posts?visibility=members');
+});
 
-// When('I write new content post {kraken-string}', async function (value) {
-//     let clickP = this.driver.$('[data-koenig-dnd-droppable=true]');
-//     await clickP.click();
-//     let element = await this.driver.$('[data-koenig-dnd-droppable=true]');
-//     return await element.setValue(value);
-// });
+Then('Editar miembro', async function () {
+    // await this.driver.$('[data-test-nav=members]').click();
+    await this.driver.$('[data-test-list]').click();
+    await this.driver.pause(1000);
+    await this.driver.$('[data-test-input=member-name]').setValue(randomMemberName);
+    await this.driver.$('[data-test-input=member-email]').setValue(faker.internet.email());
+    await this.driver.$('[data-test-button=save]').click();
+    await this.driver.pause(3000);
+    await this.driver.$('[data-test-nav=members]').click();
+});
 
-// Then('I publish post', function () {
-//     let element = this.driver.$('[data-test-button=publish-flow');
-//     return element.click();
-// });
-
-// Then('I continuo publish post', function () {
-//     let element = this.driver.$('[data-test-button=continue');
-//     return element.click();
-// });
-
-// Then('I confirm publish post', function () {
-//     let element = this.driver.$('[data-test-button=confirm-publish');
-//     return element.click();
-// });
-
-// Then('I go back to the post', function () {
-//     let element = this.driver.$('[data-test-button=close-publish-flow]');
-//     return element.click();
-// });
-
-// Then('I go back to the panel', function () {
-//     let element = this.driver.$('[data-test-link=posts]');
-//     return element.click();
-// });
-
-// Then('I select Tags nav', function () {
-//     let element = this.driver.$('[data-test-nav=tags]');
-//     return element.click();
-// });
-
-// Then('I button create new Tag', function () {
-//     let element = this.driver.$('.ember-view.gh-btn.gh-btn-primary');
-//     return element.click();
-// });
-
-// When('I enter name tag {kraken-string}', async function (value) {
-//     let element = await this.driver.$('[data-test-input=tag-name]');
-//     return await element.setValue(value);
-// });
-
-// Then('I click save button Tag', function () {
-//     let element = this.driver.$('[data-test-button=save]');
-//     return element.click();
-// });
-
-// Then('I click on one post to edit', function () {
-//     let element = this.driver.$('section > section > div:nth-child(1)');
-//     return element.click();
-// });
-
-// Then('I click settings post', function () {
-//     let element = this.driver.$('[data-test-psm-trigger]');
-//     return element.click();
-// });
-
-// Then('I click list tags', function () {
-//     let element = this.driver.$('#tag-input');
-//     return element.click();
-// });
-
-// Then('I select a tag', function () {
-//     let element = this.driver.$('li:nth-child(1)');
-//     return element.click();
-// });
+Then('Apagar Newslatter', async function () {
+    await this.driver.$('[data-test-nav=members]').click();
+    await this.driver.$('[data-test-list]').click();
+    await this.driver.pause(1000);
+    await this.driver.$('.switch').click();
+    await this.driver.$('[data-test-button=save]').click();
+    await this.driver.pause(3000);
+    await this.driver.$('[data-test-nav=members]').click();
+});
 
 
-//ember-basic-dropdown
-//ddata-test-link="posts"
-// Then('I validate the Registration successful', async function () {
-//     return await this.driver.$('body > app > div.jumbotron > div > div > div > alert > div');
-// });
+Then('Elimiar miembro', async function () {
+    await this.driver.$('[data-test-nav=members]').click();
+    await this.driver.$('[data-test-list]').click();
+    await this.driver.pause(1000);
+    await this.driver.$('[data-test-button=member-actions]').click();
+    await this.driver.pause(1000);
+    await this.driver.$('[data-test-button=delete-member]').click();
+    await this.driver.pause(1000);
+    await this.driver.$('[data-test-button=confirm]').click();
+    await this.driver.pause(1000);
+    await this.driver.$('[data-test-nav=members]').click();
+});
+
+Then('Buscar miembro', async function () {
+    await this.driver.$('[data-test-input=members-search]').click();
+    await this.driver.$('[data-test-input=members-search]').setValue(randomMemberName);
+    await this.driver.pause(1000);
+});
+
+Then('Ir a perfil', async function () {
+    await this.driver.$('.pe-all').click();
+    await this.driver.$('[data-test-nav=user-profile]').click();
+    await this.driver.pause(1000);
+});
+
+Then('Ir a settings', async function () {
+    await this.driver.$('[data-test-nav=user-settings]').click();
+    await this.driver.pause(1000);
+});

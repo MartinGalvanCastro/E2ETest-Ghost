@@ -1,7 +1,5 @@
-Feature: Escenario
-  
-  @user1 @web
-  Scenario Outline: Iniciar sesión,  editar miembro, validar cambio en miembro, validar contenido solo a miembros.
+@user1 @web
+  Scenario Outline: Iniciar sesión, crear miembro, buscar miembro, apagar newslatters, guardar cambios.
       Given I navigate to page "<URL>"
       And I wait for 2 seconds
       When Inicia sesion
@@ -14,6 +12,3 @@ Feature: Escenario
 
       Examples:
           | nuevo-contenido | menu |
-          | un miembro      | Members |
-
-
