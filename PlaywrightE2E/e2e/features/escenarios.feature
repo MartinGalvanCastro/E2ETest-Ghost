@@ -52,3 +52,47 @@ Feature: Escearios
             | nuevo-contenido | menu |
             | una pagina      | page |
             | un articulo     | post |
+    
+    @only
+    Scenario Outline: Iniciar sesión, crear post, crear etiqueta, asignar etiqueta a post, validar post con etiqueta en admin
+        Given Un usuario administrador
+        When Inicia sesion
+        Then Visualiza el dashboard de administrador
+        When Navega al menu de 'post'
+        When Crea 'un articulo'
+        And Con titulo Prueba-'post'
+        And Publica el contenido
+        And Vuelve al dashboard
+        When Navega al menu de 'etiqueta'
+        And Crea 'una etiqueta'
+        And Tiene nombre de etiqueta New Tag
+        And Vuelve al dashboard
+        When Navega al menu de 'publish'
+        And Asigna la etiqueta '<nombre-etiqueta>' al post 'Prueba-Post'
+        And Vuelve al dashboard
+        When Navega al menu de 'publish'
+        Then Verifica que el post '<titulo-post>' tiene la etiqueta '<nombre-etiqueta>'
+        
+        Then Verifica que el post 'Prueba-Post' tiene la etiqueta '<nombre-etiqueta>' y esten publicados en la pagina principal
+
+        When Cierra la pestana actual 
+
+        And Vuelve al dashboard
+        When Navega al menu de 'publish'
+        When Modifica el el titulo de post a 'New-ModPrueba-Post'
+        And Vuelve al dashboard
+        When Navega al menu de 'publish'
+        Then Verifica que el post 'New-ModPrueba-Post' tiene la etiqueta 'New tag'
+        
+        Then Verifica que el post 'New-ModPrueba-Post' tiene la etiqueta 'New tag' y esten publicados en la pagina principal
+        When Cierra la pestana actual
+
+        And Vuelve al dashboard
+        When Navega al menu de 'publish'
+        When Elimina el post 'New-ModPrueba-Post'
+            Examples:
+                | titulo-post   | nombre-etiqueta |
+                | post-etiqueta | New tag         |
+
+
+    
