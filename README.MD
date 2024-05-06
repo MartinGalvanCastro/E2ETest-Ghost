@@ -46,7 +46,6 @@ https://github.com/MartinGalvanCastro/E2ETest-Ghost/wiki
     yarn cucumber # Correr sin abrir navegador
     yarn cucumber:headed # Correr abriendo un navegador
     ```
-
 # Proyecto Base de Automatización Kraken
 
 Este es un proyecto base para automatización de pruebas utilizando Kraken-Node.
@@ -84,6 +83,8 @@ Este es un proyecto base para automatización de pruebas utilizando Kraken-Node.
 ## Para ejecutar:
 
 Ejecuta las pruebas con el siguiente comando:
+```bash
+npx kraken-node run
 1. Instalar dependencias (Desde la carpeta KrakenE2E)
 ```bash
 npm install
