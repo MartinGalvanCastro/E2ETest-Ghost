@@ -1,0 +1,19 @@
+{
+  "name": "myfirstkraken",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Este es un proyecto base para automatización de pruebas utilizando Kraken-Node.",
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "@testing-library/dom": "^10.1.0",
+    "android-platform-tools": "^3.0.2",
+    "appium": "^2.5.4",
+    "kraken-node": "^1.0.24"
+  }
+}
