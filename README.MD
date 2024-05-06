@@ -84,10 +84,14 @@ Este es un proyecto base para automatización de pruebas utilizando Kraken-Node.
 ## Para ejecutar:
 
 Ejecuta las pruebas con el siguiente comando:
-
+1. Instalar dependencias (Desde la carpeta KrakenE2E)
+```bash
+npm install
+```
+2. Ejecutar comando
 ```bash
 npx kraken-node run
-
+```
 
 
 ## Release:
