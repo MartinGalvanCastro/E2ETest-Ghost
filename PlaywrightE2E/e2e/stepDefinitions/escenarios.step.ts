@@ -77,9 +77,11 @@ When(
         break;
       case "members":
         await this.page.locator('a[data-test-nav="members"]').click();
-        await this.page.waitForURL(
-          `${this.baseUrl}${adminPrefixUrl}/members`
-        );
+        await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/members`);
+        break;
+      case "settings":
+        await this.page.click('a[href="#/settings/"]');
+        await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/settings`);
         break;
       default:
         throw new Error(`No se reconoce el contenido ${contenido}`);
@@ -87,7 +89,7 @@ When(
   }
 );
 
-let nombreMiembro:string|undefined;
+let nombreMiembro: string | undefined;
 When(
   "Crea {string}",
   async function (this: IPlaywrightWorld, contenido: string) {
@@ -110,12 +112,16 @@ When(
         await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/tags/new`);
         break;
       case "un miembro":
-        await this.page.getByRole("link", {name:"New member"}).click();
+        await this.page.getByRole("link", { name: "New member" }).click();
         nombreMiembro = this.dataGenerator.person.fullName();
-        await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/members/**`);
-        await this.page.getByLabel('Name').fill(nombreMiembro);
-        await this.page.getByLabel('Email').fill(this.dataGenerator.internet.email());
-        await this.page.getByRole("button",{name:"Save"}).click();
+        await this.page.waitForURL(
+          `${this.baseUrl}${adminPrefixUrl}/members/**`
+        );
+        await this.page.getByLabel("Name").fill(nombreMiembro);
+        await this.page
+          .getByLabel("Email")
+          .fill(this.dataGenerator.internet.email());
+        await this.page.getByRole("button", { name: "Save" }).click();
         await expect(this.page.getByText(/Created/i)).toBeVisible();
         break;
       default:
@@ -139,7 +145,6 @@ When(
   }
 );
 
-
 When(
   "Con titulo Prueba-{string}-Members",
   async function (this: IPlaywrightWorld, contenido: string) {
@@ -153,7 +158,6 @@ When(
     await this.page.waitForTimeout(2 * 1000);
   }
 );
-
 
 When("Publica el contenido", async function (this: IPlaywrightWorld) {
   await this.page.getByRole("button", { name: /Publish/i }).click();
@@ -485,70 +489,128 @@ When(
   }
 );
 
-When('Con acceso privado',  async function (this: IPlaywrightWorld){
+When("Con acceso privado", async function (this: IPlaywrightWorld) {
   await this.page.locator("button[data-test-psm-trigger]").click();
-  const dropdown =  this.page.locator("select[data-test-select=post-visibility]");
-  await dropdown.selectOption({ value: "members" })
+  const dropdown = this.page.locator(
+    "select[data-test-select=post-visibility]"
+  );
+  await dropdown.selectOption({ value: "members" });
 });
 
-Then('Visualizar contenido de miembros', async function (this: IPlaywrightWorld){
-  await this.page.getByText('All access').click();
-  await this.page.getByRole('option', { name: 'Members-only', exact: true })
-  await expect(await this.page.locator("div.posts-list.gh-list").count()).toBeGreaterThanOrEqual(1);
-});
+Then(
+  "Visualizar contenido de miembros",
+  async function (this: IPlaywrightWorld) {
+    await this.page.getByText("All access").click();
+    await this.page.getByRole("option", { name: "Members-only", exact: true });
+    await expect(
+      await this.page.locator("div.posts-list.gh-list").count()
+    ).toBeGreaterThanOrEqual(1);
+  }
+);
 
-When('Buscar el miembro', async function (this: IPlaywrightWorld){
+When("Buscar el miembro", async function (this: IPlaywrightWorld) {
   expect(nombreMiembro).toBeDefined();
   await this.page.getByText(nombreMiembro!).click();
   await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/members/**`);
 });
 
-Then('Editar miembro', async function (this: IPlaywrightWorld) {
+Then("Editar miembro", async function (this: IPlaywrightWorld) {
   nombreMiembro = this.dataGenerator.person.fullName();
-  await this.page.getByLabel('Name').fill(nombreMiembro);
-  await this.page.getByRole("button",{name:"Save"}).click();
-  await this.page.waitForTimeout(1*1000);
+  await this.page.getByLabel("Name").fill(nombreMiembro);
+  await this.page.getByRole("button", { name: "Save" }).click();
+  await this.page.waitForTimeout(1 * 1000);
   await this.page.getByTitle(nombreMiembro);
 });
 
-Then('Visualiza que el miembro se edito correctamente',  async function (this: IPlaywrightWorld) {
-  expect(nombreMiembro).toBeDefined();
-  await expect(this.page.getByTitle(nombreMiembro!)).toBeDefined()
-});
+Then(
+  "Visualiza que el miembro se edito correctamente",
+  async function (this: IPlaywrightWorld) {
+    expect(nombreMiembro).toBeDefined();
+    await expect(this.page.getByTitle(nombreMiembro!)).toBeDefined();
+  }
+);
 
-Then('Eliminar miembro', async function (this: IPlaywrightWorld) {
+Then("Eliminar miembro", async function (this: IPlaywrightWorld) {
   await this.page.locator('button[data-test-button="member-actions"]').click();
   await this.page.locator('button[data-test-button="delete-member"]').click();
   await this.page.locator('button[data-test-button="confirm"]').click();
   await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/members`);
 });
 
-Then('Visualiza que el miembro se elimino', async function (this: IPlaywrightWorld) {
-  expect(nombreMiembro).toBeDefined();
-  await expect(this.page.getByText(nombreMiembro!)).not.toBeVisible();
-});
+Then(
+  "Visualiza que el miembro se elimino",
+  async function (this: IPlaywrightWorld) {
+    expect(nombreMiembro).toBeDefined();
+    await expect(this.page.getByText(nombreMiembro!)).not.toBeVisible();
+  }
+);
 
 let newsLetterDesactivado: boolean | undefined;
-When('Crea un miembro con newsletters desactivado', async function (this: IPlaywrightWorld ) {
-  await this.page.getByRole("link", {name:"New member"}).click();
-  nombreMiembro = this.dataGenerator.person.fullName();
-  await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/members/**`);
-  await this.page.getByLabel('Name').fill(nombreMiembro);
-  await this.page.getByLabel('Email').fill(this.dataGenerator.internet.email());
-  await this.page.locator('div.for-switch').click({force:true})
-  await this.page.getByRole("button",{name:"Save"}).click();
-  newsLetterDesactivado = true;
-  await expect(this.page.getByText(/Created/i)).toBeVisible();
-});
-
-Then('Visualiza que el miembro se creo correctamente', async function (this: IPlaywrightWorld)  {
-  expect(nombreMiembro).toBeDefined();
-  await expect(this.page.locator("h2[data-test-screen-title]")).toHaveText(nombreMiembro!);
-  if(newsLetterDesactivado){
-    await expect(this.page.locator('input[data-test-checkbox="member-subscribed"]')).not.toBeChecked();
+When(
+  "Crea un miembro con newsletters desactivado",
+  async function (this: IPlaywrightWorld) {
+    await this.page.getByRole("link", { name: "New member" }).click();
+    nombreMiembro = this.dataGenerator.person.fullName();
+    await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/members/**`);
+    await this.page.getByLabel("Name").fill(nombreMiembro);
+    await this.page
+      .getByLabel("Email")
+      .fill(this.dataGenerator.internet.email());
+    await this.page.locator("div.for-switch").click({ force: true });
+    await this.page.getByRole("button", { name: "Save" }).click();
+    newsLetterDesactivado = true;
+    await expect(this.page.getByText(/Created/i)).toBeVisible();
   }
+);
 
+Then(
+  "Visualiza que el miembro se creo correctamente",
+  async function (this: IPlaywrightWorld) {
+    expect(nombreMiembro).toBeDefined();
+    await expect(this.page.locator("h2[data-test-screen-title]")).toHaveText(
+      nombreMiembro!
+    );
+    if (newsLetterDesactivado) {
+      await expect(
+        this.page.locator('input[data-test-checkbox="member-subscribed"]')
+      ).not.toBeChecked();
+    }
+  }
+);
+
+When("Edita metadata de la pagina", async function (this: IPlaywrightWorld) {
+  await this.page.click(
+    "div.flex.items-start.justify-between.gap-4 button.cursor-pointer"
+  );
+  await this.page.waitForTimeout(1000);
+  // Selecciona todo el texto existente en el campo de entrada y presiona la tecla "Backspace" para borrarlo
+  await this.page.keyboard.press("Control+A");
+  await this.page.keyboard.press("Backspace");
+  await this.page.waitForTimeout(1000);
+  await this.page.keyboard.type("NewMetaData");
+  await this.page.waitForTimeout(1000);
+  console.log("Metadata de la página modificada");
+
+  await this.page.getByRole("button", { name: "save" }).click();
+  //await this.page.click('button:has(span:has-text("Save"))');
+  // await this.page.waitForTimeout(6000);
 });
+
+Then(
+  "Valida que se haya modificado la metadata de la página",
+  async function (this: IPlaywrightWorld) {
+    await this.page.click(
+      "div.flex.items-start.justify-between.gap-4 button.cursor-pointer"
+    );
+    // Verifica si el texto "NewMetaData" está presente en la página actual
+    const isMetadataModified = await this.page.waitForSelector(
+      "text=NewMetaData"
+    );
+
+    // Verifica si el texto "NewMetaData" está presente
+    expect(isMetadataModified).not.toBeNull();
+  }
+);
 
 After(() => {
   esTemaClaro = undefined;
