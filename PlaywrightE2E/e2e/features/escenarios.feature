@@ -113,3 +113,39 @@ Feature: Escearios
           | nuevo-contenido | menu |
           | un articulo     | post | 
           | una pagina      | page |
+
+    Scenario: Iniciar sesión, crear un miembro, editar miembro, validar cambio en miembro
+      Given Un usuario administrador
+      When Inicia sesion
+      Then Visualiza el dashboard de administrador
+      When Navega al menu de 'members'
+      And Crea 'un miembro'
+      When Navega al menu de 'members'
+      And Buscar el miembro
+      Then Editar miembro
+      When Navega al menu de 'members'
+      And Buscar el miembro
+      Then Visualiza que el miembro se edito correctamente
+
+
+    Scenario: Iniciar sesión, crear un miembro, eliminar miembro, validar que el miembro fue eliminado
+      Given Un usuario administrador
+      When Inicia sesion
+      Then Visualiza el dashboard de administrador
+      When Navega al menu de 'members'
+      And Crea 'un miembro'
+      When Navega al menu de 'members'
+      And Buscar el miembro
+      Then Eliminar miembro
+      When Navega al menu de 'members'
+      Then Visualiza que el miembro se elimino
+
+    Scenario: Inicar sesion, crear miembro, cambiar valor del newsletter, validar que se actualizo correctamente
+      Given Un usuario administrador
+      When Inicia sesion
+      Then Visualiza el dashboard de administrador
+      When Navega al menu de 'members'
+      And Crea un miembro con newsletters desactivado
+      When Navega al menu de 'members'
+      And Buscar el miembro
+      Then Visualiza que el miembro se creo correctamente
