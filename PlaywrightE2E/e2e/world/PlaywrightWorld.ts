@@ -49,7 +49,6 @@ class PlaywrightWorld extends World implements IPlaywrightWorld {
 
   constructor(options: IWorldOptions) {
     super(options);
-    faker.seed(100);
     this.dataGenerator = faker;
   }
 
