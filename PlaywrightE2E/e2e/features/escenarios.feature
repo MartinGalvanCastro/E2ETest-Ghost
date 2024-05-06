@@ -53,7 +53,7 @@ Feature: Escearios
             | una pagina      | page |
             | un articulo     | post |
     
-    @only
+    
     Scenario Outline: Iniciar sesión, crear post, crear etiqueta, asignar etiqueta a post, validar post con etiqueta en admin
         Given Un usuario administrador
         When Inicia sesion
@@ -149,3 +149,12 @@ Feature: Escearios
       When Navega al menu de 'members'
       And Buscar el miembro
       Then Visualiza que el miembro se creo correctamente
+
+    @only
+    Scenario: Iniciar sesión, crear metadata para google, validar que la etiqueta esté bien creada
+      Given Un usuario administrador
+      When Inicia sesion
+      Then Visualiza el dashboard de administrador
+      When Navega al menu de 'settings'
+      When Edita metadata de la pagina
+      Then Valida que se haya modificado la metadata de la página
