@@ -7,7 +7,7 @@ URL del despligue: https://ghost-al42.onrender.com
 
 - Martin Galvan - md.galvan@uniandes.edu.co
 - Julian Roa - ja.roav1@uniandes.edu.co
--
+- Diego Fonseca - da.fonseca@uniandes.edu.co
 - Juan Sebastián Cervantes Restrepo - js.cervantes@uniandes.edu.co
 
 ## Funcionalidades y Escenarios desarolladas:
