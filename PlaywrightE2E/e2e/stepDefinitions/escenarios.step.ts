@@ -1,5 +1,5 @@
-import { Given, When, Then, After, Before } from "@cucumber/cucumber";
-import { expect, Page } from "@playwright/test";
+import { Given, When, Then, After } from "@cucumber/cucumber";
+import { expect } from "@playwright/test";
 import { IPlaywrightWorld } from "../world";
 
 const adminPrefixUrl = "/ghost/#";
@@ -75,6 +75,12 @@ When(
           `${this.baseUrl}${adminPrefixUrl}/posts?type=published`
         );
         break;
+      case "members":
+        await this.page.getByRole("link", { name:"Members"}).click();
+        await this.page.waitForURL(
+          `${this.baseUrl}${adminPrefixUrl}/members`
+        );
+        break;
       default:
         throw new Error(`No se reconoce el contenido ${contenido}`);
     }
@@ -102,6 +108,14 @@ When(
         await this.page.getByRole("link", { name: "New tag" }).click();
         await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/tags/new`);
         break;
+      case "un miembro":
+        await this.page.getByRole("link", {name:"New member"}).click();
+        await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/members/**`);
+        await this.page.getByLabel('Name').fill(this.dataGenerator.person.fullName());
+        await this.page.getByLabel('Email').fill(this.dataGenerator.internet.email());
+        await this.page.getByRole("button",{name:"Save"}).click();
+        await expect(this.page.getByText(/Created/i)).toBeVisible();
+        break;
       default:
         throw new Error(`No se reconoce el contenido ${contenido}`);
     }
@@ -122,6 +136,35 @@ When(
     await this.page.waitForTimeout(2 * 1000);
   }
 );
+
+When(
+  "Con titulo Prueba-{string}",
+  async function (this: IPlaywrightWorld, contenido: string) {
+    const titlePlaceholder =
+      contenido.charAt(0).toUpperCase() + contenido.slice(1);
+    tituloContenido = `Prueba-${titlePlaceholder}`;
+    await this.page
+      .getByPlaceholder(`${titlePlaceholder} title`)
+      .fill(tituloContenido);
+    await this.page.getByText("New").click();
+    await this.page.waitForTimeout(2 * 1000);
+  }
+);
+
+When(
+  "Con titulo Prueba-{string}-Members",
+  async function (this: IPlaywrightWorld, contenido: string) {
+    const titlePlaceholder =
+      contenido.charAt(0).toUpperCase() + contenido.slice(1);
+    tituloContenido = `Prueba-${titlePlaceholder}-Members`;
+    await this.page
+      .getByPlaceholder(`${titlePlaceholder} title`)
+      .fill(tituloContenido);
+    await this.page.getByText("New").click();
+    await this.page.waitForTimeout(2 * 1000);
+  }
+);
+
 
 When("Publica el contenido", async function (this: IPlaywrightWorld) {
   await this.page.getByRole("button", { name: /Publish/i }).click();
@@ -453,6 +496,18 @@ When(
     }
   }
 );
+
+When('Con acceso privado',  async function (this: IPlaywrightWorld){
+  await this.page.locator("button[data-test-psm-trigger]").click();
+  const dropdown =  this.page.locator("select[data-test-select=post-visibility]");
+  await dropdown.selectOption({ value: "members" })
+});
+
+Then('Visualizar contenido de miembros', async function (this: IPlaywrightWorld){
+  await this.page.getByText('All access').click();
+  await this.page.getByRole('option', { name: 'Members-only', exact: true })
+  await expect(await this.page.locator("div.posts-list.gh-list").count()).toBeGreaterThanOrEqual(1);
+});
 
 After(() => {
   esTemaClaro = undefined;

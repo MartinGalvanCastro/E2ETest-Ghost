@@ -94,5 +94,22 @@ Feature: Escearios
                 | titulo-post   | nombre-etiqueta |
                 | post-etiqueta | New tag         |
 
+    Scenario Outline: Iniciar sesión, crea un miembro, crea un contenido, cambia el acceso del contenido a solo miembros, valida que el contenido es solo para miembros
+      Given Un usuario administrador
+      When Inicia sesion
+      Then Visualiza el dashboard de administrador
+      When Navega al menu de 'members'
+      And Crea 'un miembro'
+      And Navega al menu de '<menu>'
+      And Crea '<nuevo-contenido>'
+      And Con titulo Prueba-'<menu>'-Members
+      And Con acceso privado
+      And Publica el contenido
+      When Vuelve al dashboard
+      And Navega al menu de '<menu>'
+      Then Visualizar contenido de miembros
 
-    
+      Examples:
+          | nuevo-contenido | menu |
+          | un articulo     | post | 
+          | una pagina      | page |
