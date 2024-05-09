@@ -150,11 +150,26 @@ Feature: Escearios
       And Buscar el miembro
       Then Visualiza que el miembro se creo correctamente
 
-    @only
+    
     Scenario: Iniciar sesión, crear metadata para google, validar que la etiqueta esté bien creada
       Given Un usuario administrador
       When Inicia sesion
       Then Visualiza el dashboard de administrador
       When Navega al menu de 'settings'
+      When Esperar '5000'
+      Then tomar una captura de pantalla con nombre 'menu-setttings' y guardarla en 'escenario-metadata'
+      When Esperar '1000'
       When Edita metadata de la pagina
       Then Valida que se haya modificado la metadata de la página
+      
+    @only
+    Scenario: Inicio sesion, hacer un sitio privado, visualizar sitio privado
+      Given Un usuario administrador
+      When Inicia sesion
+      Then Visualiza el dashboard de administrador
+      When Navega al menu de 'page'
+      When seleccionar la primera página del listado de páginas
+      When seleccionar el boton settings
+      When seleccionar el desplegable de acceso a la pagina
+      When Esperar '5000'
+

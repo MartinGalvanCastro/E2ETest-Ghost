@@ -1,6 +1,7 @@
 import { Given, When, Then, After } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import { IPlaywrightWorld } from "../world";
+import fs from "fs";
 
 const adminPrefixUrl = "/ghost/#";
 
@@ -232,6 +233,46 @@ When("Programa el contenido", async function (this: IPlaywrightWorld) {
 When("Vuelve al dashboard", async function (this: IPlaywrightWorld) {
   await this.page.goto("/ghost");
   await this.page.waitForTimeout(2500);
+});
+
+When("seleccionar la primera página del listado de páginas", async function () {
+  // Seleccionar la primera pagina del listado de paginas
+  const divElement = await this.page.$(".posts-list");
+  if (divElement) {
+    const firstChild = await divElement.$(":first-child");
+    if (firstChild) {
+      await firstChild.click();
+    } else {
+      throw new Error("El div con clase 'posts-list' no tiene hijos");
+    }
+  } else {
+    throw new Error("No se encontró el div con clase 'posts-list'");
+  }
+});
+
+When("seleccionar el boton settings", async function () {
+  // Dar clic en el botón "Settings"
+  await this.page.getByRole("button", { name: "Settings" }).click();
+});
+
+When("seleccionar el desplegable de acceso a la pagina", async function () {
+  // Dar clic en el select "Page access"
+  // Selecciona el elemento <div> que contiene el <select> utilizando su clase
+  const divElement = await this.page.waitForSelector("div.ember-view");
+
+  // Dentro del <div>, encuentra el elemento <select> utilizando su atributo data-test-select
+  const selectElement = await divElement.$(
+    'select[data-test-select="post-visibility"]'
+  );
+
+  if (selectElement) {
+    // Ahora puedes interactuar con el elemento <select> como desees, por ejemplo, seleccionar una opción
+    await selectElement.selectOption({ value: "public" }); // Selecciona la opción con valor "public"
+  } else {
+    console.error("El elemento select no se encontró.");
+  }
+  // Ahora puedes interactuar con el elemento <select> como desees, por ejemplo, seleccionar una opción
+  await selectElement.selectOption({ value: "Members only" }); // Selecciona la opción con valor "public"
 });
 
 When(
@@ -611,6 +652,22 @@ Then(
     expect(isMetadataModified).not.toBeNull();
   }
 );
+
+Then(
+  "tomar una captura de pantalla con nombre {string} y guardarla en {string}",
+  async function (imageName: string, folder: string) {
+    const screenshotPath = `./screenshots/${folder}/screenshot-${Date.now()}-${imageName}.png`;
+    if (!fs.existsSync(`./screenshots/${folder}`)) {
+      fs.mkdirSync(`./screenshots/${folder}`, { recursive: true });
+    }
+    await this.page.screenshot({ path: screenshotPath });
+  }
+);
+
+When("Esperar {string}", async (tiempo: string) => {
+  const tiempoEnMilisegundos = parseInt(tiempo);
+  await new Promise((resolve) => setTimeout(resolve, tiempoEnMilisegundos));
+});
 
 After(() => {
   esTemaClaro = undefined;
