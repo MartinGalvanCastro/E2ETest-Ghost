@@ -1,9 +1,27 @@
-import { Given, When, Then, After } from "@cucumber/cucumber";
+import {
+  Given,
+  When,
+  Then,
+  After,
+  Before,
+  ITestCaseHookParameter,
+} from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import { IPlaywrightWorld } from "../world";
 import fs from "fs";
-
 const adminPrefixUrl = "/ghost/#";
+
+let scenarioName: string;
+Before(function ({ pickle }: ITestCaseHookParameter) {
+  scenarioName = pickle.name;
+});
+
+Given(
+  "Se esta usando la version {string} de Ghost",
+  async function (this: IPlaywrightWorld, version: string) {
+    await this.init(version);
+  }
+);
 
 Given("Un usuario administrador", async function (this: IPlaywrightWorld) {
   this.adminUser = process.env.ADMIN_USER!;
@@ -11,41 +29,60 @@ Given("Un usuario administrador", async function (this: IPlaywrightWorld) {
 });
 
 When("Inicia sesion", async function (this: IPlaywrightWorld) {
-  await this.page.goto("/ghost");
-  await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/signin`);
-  await this.page.getByLabel("Email address").fill(this.adminUser!);
-  await this.page.getByLabel("Password").fill(this.adminPassword!);
-  await this.page.getByRole("button", { name: /Sign in/i }).click();
-  await this.page.waitForURL(`${this.baseUrl}/ghost/#/dashboard`);
+  if (this.isLatestVersion()) {
+    await this.page.goto("/ghost");
+    await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/signin`);
+    await this.page.getByLabel("Email address").fill(this.adminUser!);
+    await this.page.getByLabel("Password").fill(this.adminPassword!);
+    await this.page.getByRole("button", { name: /Sign in/i }).click();
+    await this.page.waitForURL(`${this.baseUrl}/ghost/#/dashboard`);
+  } else {
+    await this.page.goto(`${this.baseUrl}${adminPrefixUrl}/signin`);
+    await this.page.getByPlaceholder("Email address").fill(this.adminUser!);
+    await this.page.getByPlaceholder("Password").fill(this.adminPassword!);
+    await this.page.getByRole("button", { name: /Sign in/i }).click();
+    await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/site`);
+  }
 });
 
 Then(
   "Visualiza el dashboard de administrador",
   async function (this: IPlaywrightWorld) {
-    await expect(this.page).toHaveURL(
-      `${this.baseUrl}${adminPrefixUrl}/dashboard`
-    );
-    await expect(
-      this.page.getByRole("heading", { name: /Dashboard/i })
-    ).toBeVisible();
+    if (this.isLatestVersion()) {
+      await expect(this.page).toHaveURL(
+        `${this.baseUrl}${adminPrefixUrl}/dashboard`
+      );
+      await expect(
+        this.page.getByRole("heading", { name: /Dashboard/i })
+      ).toBeVisible();
+    } else {
+      await expect(this.page).toHaveURL(
+        `${this.baseUrl}${adminPrefixUrl}/site`
+      );
+      await expect(this.page.locator("h1.site-title")).toBeDefined();
+    }
   }
 );
 
 let esTemaClaro: boolean | undefined;
 When("Cambia el tema", async function (this: IPlaywrightWorld) {
-  const disabledAtributo = await this.page
-    .locator("head link#dark-styles")
-    .getAttribute("disabled");
-  esTemaClaro = disabledAtributo !== null;
-  await this.page.locator("div.nightshift-toggle").click();
-  await this.page.waitForTimeout(1 * 1000);
+  if (this.isLatestVersion()) {
+    const disabledAtributo = await this.page
+      .locator("head link#dark-styles")
+      .getAttribute("disabled");
+    esTemaClaro = disabledAtributo !== null;
+    await this.page.locator("div.nightshift-toggle").click();
+    await this.page.waitForTimeout(1 * 1000);
+  }
 });
 
 Then("Visualiza que el tema cambio", async function (this: IPlaywrightWorld) {
-  const cambioTema = await this.page
-    .locator("head link#dark-styles")
-    .getAttribute("disabled");
-  expect(cambioTema !== null).toBe(!esTemaClaro);
+  if (this.isLatestVersion()) {
+    const cambioTema = await this.page
+      .locator("head link#dark-styles")
+      .getAttribute("disabled");
+    expect(cambioTema !== null).toBe(!esTemaClaro);
+  }
 });
 
 When(
@@ -77,8 +114,17 @@ When(
         );
         break;
       case "members":
-        await this.page.locator('a[data-test-nav="members"]').click();
-        await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/members`);
+        if (this.isLatestVersion()) {
+          await this.page.locator('a[data-test-nav="members"]').click();
+          await this.page.waitForURL(
+            `${this.baseUrl}${adminPrefixUrl}/members`
+          );
+        } else {
+          await this.page.getByRole("link", { name: "Members" }).click();
+          await this.page.waitForURL(
+            `${this.baseUrl}${adminPrefixUrl}/members`
+          );
+        }
         break;
       case "settings":
         await this.page.click('a[href="#/settings/"]');
@@ -141,7 +187,12 @@ When(
     await this.page
       .getByPlaceholder(`${titlePlaceholder} title`)
       .fill(tituloContenido);
-    await this.page.getByText("New").click();
+    if (this.isLatestVersion()) {
+      await this.page.getByText("New").click();
+    } else {
+      await this.page.getByText("New", { exact: true }).click();
+    }
+
     await this.page.waitForTimeout(2 * 1000);
   }
 );
@@ -155,26 +206,47 @@ When(
     await this.page
       .getByPlaceholder(`${titlePlaceholder} title`)
       .fill(tituloContenido);
-    await this.page.getByText("New").click();
+    if (this.isLatestVersion()) {
+      await this.page.getByText("New").click();
+    } else {
+      await this.page.getByText("New", { exact: true }).click();
+    }
     await this.page.waitForTimeout(2 * 1000);
   }
 );
 
 When("Publica el contenido", async function (this: IPlaywrightWorld) {
   await this.page.getByRole("button", { name: /Publish/i }).click();
-  await this.page
-    .getByRole("button", { name: /Continue, final review/i })
-    .click();
-  await this.page
-    .locator('button[data-test-button="confirm-publish"]')
-    .click({ force: true });
+  if (this.isLatestVersion()) {
+    await this.page
+      .getByRole("button", { name: /Continue, final review/i })
+      .click();
+    await this.page
+      .locator('button[data-test-button="confirm-publish"]')
+      .click({ force: true });
+  } else {
+    await this.page
+      .locator(
+        "button.gh-btn.gh-btn-blue.gh-publishmenu-button.gh-btn-icon.ember-view"
+      )
+      .click();
+  }
 });
 
 Then(
   "Verifica que el contenido se visualiza de manera correcta",
   async function (this: IPlaywrightWorld) {
+<<<<<<< HEAD
     await this.page.locator("a.gh-post-bookmark-wrapper").click();
     expect(this.page.getByTitle(tituloContenido!)).toBeDefined();
+=======
+    if (this.isLatestVersion()) {
+      await this.page.locator("a.gh-post-bookmark-wrapper").click();
+      await expect(this.page.getByTitle(tituloContenido!)).toBeDefined();
+    } else {
+      await this.page.getByRole("link", { name: "View Post" }).click();
+    }
+>>>>>>> 5910ce3c6d329c8f7ed4987f002cf79ed1abace8
   }
 );
 
@@ -211,23 +283,34 @@ Then(
 
 When("Programa el contenido", async function (this: IPlaywrightWorld) {
   await this.page.getByRole("button", { name: /Publish/i }).click();
-  await this.page.getByRole("button", { name: "Right now" }).click();
-  await this.page.getByText("Schedule for later").click({ force: true });
-  const timeValue = await this.page
-    .locator("input[data-test-date-time-picker-time-input]")
-    .inputValue();
-  const [hour, minute] = timeValue.split(":").map(parseInt);
-  const newTime = `${hour < 10 ? `0${hour}` : hour}:${minute}`;
-  await this.page
-    .locator("input[data-test-date-time-picker-time-input]")
-    .fill(newTime);
-  await this.page
-    .getByRole("button", { name: /Continue, final review/i })
-    .click();
-  await this.page
-    .locator('button[data-test-button="confirm-publish"]')
-    .click({ force: true });
-  await expect(this.page.locator("a.gh-post-bookmark-wrapper")).toBeVisible();
+  if (this.isLatestVersion()) {
+    await this.page.getByRole("button", { name: "Right now" }).click();
+    await this.page.getByText("Schedule for later").click({ force: true });
+  } else {
+    await this.page.getByText("Schedule it for later").click({ force: true });
+  }
+
+  if (this.isLatestVersion()) {
+    const timeValue = await this.page
+      .locator("input[data-test-date-time-picker-time-input]")
+      .inputValue();
+    const [hour, minute] = timeValue.split(":").map(parseInt);
+    const newTime = `${hour < 10 ? `0${hour}` : hour}:${minute}`;
+    await this.page
+      .locator("input[data-test-date-time-picker-time-input]")
+      .fill(newTime);
+    await this.page
+      .getByRole("button", { name: /Continue, final review/i })
+      .click();
+    await this.page
+      .locator('button[data-test-button="confirm-publish"]')
+      .click({ force: true });
+    await expect(this.page.locator("a.gh-post-bookmark-wrapper")).toBeVisible();
+  } else {
+    await this.page
+      .getByRole("button", { name: "Schedule", exact: true })
+      .click();
+  }
 });
 
 When("Vuelve al dashboard", async function (this: IPlaywrightWorld) {
@@ -565,21 +648,41 @@ When(
 );
 
 When("Con acceso privado", async function (this: IPlaywrightWorld) {
-  await this.page.locator("button[data-test-psm-trigger]").click();
-  const dropdown = this.page.locator(
-    "select[data-test-select=post-visibility]"
-  );
-  await dropdown.selectOption({ value: "members" });
+  if (this.isLatestVersion()) {
+    await this.page.locator("button[data-test-psm-trigger]").click();
+    const dropdown = this.page.locator(
+      "select[data-test-select=post-visibility]"
+    );
+    await dropdown.selectOption({ value: "members" });
+  } else {
+    await this.page.locator("button.post-settings").click();
+    const dropdown = this.page.locator('select[optiontargetpath="name"]');
+    await dropdown.selectOption({ value: "members" });
+    await this.page.locator('button[aria-label="Close"]').click();
+  }
 });
 
 Then(
   "Visualizar contenido de miembros",
   async function (this: IPlaywrightWorld) {
     await this.page.getByText("All access").click();
+<<<<<<< HEAD
     this.page.getByRole("option", { name: "Members-only", exact: true });
     expect(
       await this.page.locator("div.posts-list.gh-list").count()
     ).toBeGreaterThanOrEqual(1);
+=======
+    await this.page.getByRole("option", { name: "Members-only", exact: true });
+    if (this.isLatestVersion()) {
+      await expect(
+        await this.page.locator("div.posts-list.gh-list").count()
+      ).toBeGreaterThanOrEqual(1);
+    } else {
+      await expect(
+        await this.page.locator("ol.posts-list.gh-list").count()
+      ).toBeGreaterThanOrEqual(1);
+    }
+>>>>>>> 5910ce3c6d329c8f7ed4987f002cf79ed1abace8
   }
 );
 
@@ -642,13 +745,19 @@ Then(
   "Visualiza que el miembro se creo correctamente",
   async function (this: IPlaywrightWorld) {
     expect(nombreMiembro).toBeDefined();
-    await expect(this.page.locator("h2[data-test-screen-title]")).toHaveText(
-      nombreMiembro!
-    );
-    if (newsLetterDesactivado) {
+    if (this.isLatestVersion()) {
+      await expect(this.page.locator("h2[data-test-screen-title]")).toHaveText(
+        nombreMiembro!
+      );
+      if (newsLetterDesactivado) {
+        await expect(
+          this.page.locator('input[data-test-checkbox="member-subscribed"]')
+        ).not.toBeChecked();
+      }
+    } else {
       await expect(
-        this.page.locator('input[data-test-checkbox="member-subscribed"]')
-      ).not.toBeChecked();
+        this.page.getByRole("heading", { name: nombreMiembro! }).first()
+      ).toBeVisible();
     }
   }
 );
@@ -689,7 +798,7 @@ Then(
 
 Then(
   "tomar una captura de pantalla con nombre {string} y guardarla en {string}",
-  async function (imageName: string, folder: string) {
+  async function (this: IPlaywrightWorld, imageName: string, folder: string) {
     const screenshotPath = `./screenshots/${folder}/screenshot-${Date.now()}-${imageName}.png`;
     if (!fs.existsSync(`./screenshots/${folder}`)) {
       fs.mkdirSync(`./screenshots/${folder}`, { recursive: true });
@@ -701,6 +810,10 @@ Then(
 When("Esperar {string}", async (tiempo: string) => {
   const tiempoEnMilisegundos = parseInt(tiempo);
   await new Promise((resolve) => setTimeout(resolve, tiempoEnMilisegundos));
+});
+
+When("Navega a la seccion principal", async function (this: IPlaywrightWorld) {
+  this.page.goto(`${adminPrefixUrl}`);
 });
 
 After(() => {
