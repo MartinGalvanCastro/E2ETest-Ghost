@@ -236,17 +236,12 @@ When("Publica el contenido", async function (this: IPlaywrightWorld) {
 Then(
   "Verifica que el contenido se visualiza de manera correcta",
   async function (this: IPlaywrightWorld) {
-<<<<<<< HEAD
-    await this.page.locator("a.gh-post-bookmark-wrapper").click();
-    expect(this.page.getByTitle(tituloContenido!)).toBeDefined();
-=======
     if (this.isLatestVersion()) {
       await this.page.locator("a.gh-post-bookmark-wrapper").click();
       await expect(this.page.getByTitle(tituloContenido!)).toBeDefined();
     } else {
       await this.page.getByRole("link", { name: "View Post" }).click();
     }
->>>>>>> 5910ce3c6d329c8f7ed4987f002cf79ed1abace8
   }
 );
 
@@ -666,12 +661,6 @@ Then(
   "Visualizar contenido de miembros",
   async function (this: IPlaywrightWorld) {
     await this.page.getByText("All access").click();
-<<<<<<< HEAD
-    this.page.getByRole("option", { name: "Members-only", exact: true });
-    expect(
-      await this.page.locator("div.posts-list.gh-list").count()
-    ).toBeGreaterThanOrEqual(1);
-=======
     await this.page.getByRole("option", { name: "Members-only", exact: true });
     if (this.isLatestVersion()) {
       await expect(
@@ -682,7 +671,6 @@ Then(
         await this.page.locator("ol.posts-list.gh-list").count()
       ).toBeGreaterThanOrEqual(1);
     }
->>>>>>> 5910ce3c6d329c8f7ed4987f002cf79ed1abace8
   }
 );
 
