@@ -174,7 +174,7 @@ Then(
   "Verifica que el contenido se visualiza de manera correcta",
   async function (this: IPlaywrightWorld) {
     await this.page.locator("a.gh-post-bookmark-wrapper").click();
-    await expect(this.page.getByTitle(tituloContenido!)).toBeDefined();
+    expect(this.page.getByTitle(tituloContenido!)).toBeDefined();
   }
 );
 
@@ -193,7 +193,7 @@ When(
     await this.page.waitForTimeout(2000);
     await this.page.getByRole("link", { name: "Tags" }).first().click();
     await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/tags`);
-    await expect(this.page.getByText("New Tag")).toBeDefined();
+    expect(this.page.getByText("New Tag")).toBeDefined();
   }
 );
 
@@ -205,7 +205,7 @@ Then(
     await this.page.waitForTimeout(2000);
     await this.page.getByRole("link", { name: "Tags" }).first().click();
     await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/tags`);
-    await expect(this.page.getByText(randomTagName!)).toBeDefined();
+    expect(this.page.getByText(randomTagName!)).toBeDefined();
   }
 );
 
@@ -256,23 +256,37 @@ When("seleccionar el boton settings", async function () {
 });
 
 When("seleccionar el desplegable de acceso a la pagina", async function () {
-  // Dar clic en el select "Page access"
-  // Selecciona el elemento <div> que contiene el <select> utilizando su clase
-  const divElement = await this.page.waitForSelector("div.ember-view");
+  try {
+    // Esperar a que aparezca el elemento <select>
+    const selectElement = await this.page.waitForSelector(
+      'select[data-test-select="post-visibility"]'
+    );
 
-  // Dentro del <div>, encuentra el elemento <select> utilizando su atributo data-test-select
-  const selectElement = await divElement.$(
-    'select[data-test-select="post-visibility"]'
-  );
+    // Verificar que el elemento <select> se haya encontrado correctamente
+    if (selectElement) {
+      // Hacer clic en el elemento <select> para abrir las opciones
+      await selectElement.click();
 
-  if (selectElement) {
-    // Ahora puedes interactuar con el elemento <select> como desees, por ejemplo, seleccionar una opción
-    await selectElement.selectOption({ value: "public" }); // Selecciona la opción con valor "public"
-  } else {
-    console.error("El elemento select no se encontró.");
+      // Esperar un breve momento para que las opciones se carguen si es necesario
+      await this.page.waitForTimeout(1000);
+
+      // Encuentra la opción "Members only" y haz clic en ella
+      const optionElement = await selectElement.selectOption({
+        value: "members",
+      });
+    } else {
+      throw new Error(
+        "No se encontró el elemento select con el atributo especificado."
+      );
+    }
+  } catch (error) {
+    console.error("Error al seleccionar el desplegable:", error);
   }
-  // Ahora puedes interactuar con el elemento <select> como desees, por ejemplo, seleccionar una opción
-  await selectElement.selectOption({ value: "Members only" }); // Selecciona la opción con valor "public"
+});
+
+When("Dar clic en el boton de actualizar", async function () {
+  //Dar click en el boton Update
+  await this.page.getByRole("button", { name: "Update" }).click();
 });
 
 When(
@@ -335,11 +349,21 @@ When(
 );
 
 Then(
+  "Verifica que el acceso a la pagina sea para solo miembros",
+  async function (this: IPlaywrightWorld) {
+    // Verificar que la etiqueta se haya asignado
+    const tagElement = this.page.getByText("Members only");
+    expect(tagElement).toBeDefined();
+    await this.page.waitForTimeout(4000);
+  }
+);
+
+Then(
   "Visualiza que el contenido se ha programado correctamente",
   async function (this: IPlaywrightWorld) {
     let locators = await this.page.getByText(tituloContenido!).all();
     locators = locators.filter(async (locator) => {
-      return await locator.getByText("Scheduled");
+      return locator.getByText("Scheduled");
     });
     expect(locators.length).toBeGreaterThan(0);
   }
@@ -369,9 +393,19 @@ Then(
     await this.page.getByRole("button", { name: "Settings" }).click();
 
     // Verificar que la etiqueta se haya asignado
-    const tagElement = await this.page.getByText(etiqueta);
+    const tagElement = this.page.getByText(etiqueta);
     expect(tagElement).toBeDefined();
     await this.page.waitForTimeout(4000);
+  }
+);
+
+Then(
+  "Verificar que las redes sociales esten bien configuradas",
+  async function (this: IPlaywrightWorld) {
+    //la pagina contiene el texto "Social accounts"
+    this.page.getByText("Social accounts");
+    this.page.getByText("https://www.facebook.com/ghost");
+    this.page.getByText("https://twitter.com/ghost");
   }
 );
 
@@ -411,7 +445,7 @@ When(
 Then(
   "Verifica que la etiqueta {string} se haya creado",
   async function (this: IPlaywrightWorld, etiqueta: string) {
-    await expect(this.page.getByText(etiqueta)).toBeDefined();
+    expect(this.page.getByText(etiqueta)).toBeDefined();
   }
 );
 
@@ -440,14 +474,14 @@ Then(
     etiqueta: string,
     nuevoNombre: string
   ) {
-    await expect(this.page.getByText(nuevoNombre)).toBeDefined();
+    expect(this.page.getByText(nuevoNombre)).toBeDefined();
   }
 );
 
 // Cerrar pestana actual abierta
 When("Cierra la pestana actual", async function (this: IPlaywrightWorld) {
-  const context = await this.page.context();
-  const pages = await context.pages();
+  const context = this.page.context();
+  const pages = context.pages();
 
   if (pages.length > 1) {
     // Verificar si hay más de una página abierta
@@ -542,8 +576,8 @@ Then(
   "Visualizar contenido de miembros",
   async function (this: IPlaywrightWorld) {
     await this.page.getByText("All access").click();
-    await this.page.getByRole("option", { name: "Members-only", exact: true });
-    await expect(
+    this.page.getByRole("option", { name: "Members-only", exact: true });
+    expect(
       await this.page.locator("div.posts-list.gh-list").count()
     ).toBeGreaterThanOrEqual(1);
   }
@@ -560,14 +594,14 @@ Then("Editar miembro", async function (this: IPlaywrightWorld) {
   await this.page.getByLabel("Name").fill(nombreMiembro);
   await this.page.getByRole("button", { name: "Save" }).click();
   await this.page.waitForTimeout(1 * 1000);
-  await this.page.getByTitle(nombreMiembro);
+  this.page.getByTitle(nombreMiembro);
 });
 
 Then(
   "Visualiza que el miembro se edito correctamente",
   async function (this: IPlaywrightWorld) {
     expect(nombreMiembro).toBeDefined();
-    await expect(this.page.getByTitle(nombreMiembro!)).toBeDefined();
+    expect(this.page.getByTitle(nombreMiembro!)).toBeDefined();
   }
 );
 

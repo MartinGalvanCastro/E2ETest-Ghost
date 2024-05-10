@@ -162,7 +162,7 @@ Feature: Escearios
       When Edita metadata de la pagina
       Then Valida que se haya modificado la metadata de la página
       
-    @only
+    
     Scenario: Inicio sesion, hacer un sitio privado, visualizar sitio privado
       Given Un usuario administrador
       When Inicia sesion
@@ -171,5 +171,40 @@ Feature: Escearios
       When seleccionar la primera página del listado de páginas
       When seleccionar el boton settings
       When seleccionar el desplegable de acceso a la pagina
+      When seleccionar el boton settings
+      When Dar clic en el boton de actualizar
+      And Vuelve al dashboard
+      When Navega al menu de 'page'
+      When seleccionar la primera página del listado de páginas
+      When seleccionar el boton settings
+      Then Verifica que el acceso a la pagina sea para solo miembros
       When Esperar '5000'
+
+    
+    Scenario: Inicio sesión, ingreso la información de redes sociales, visualizar que las redes sociales esten bien configuradas
+      Given Un usuario administrador
+      When Inicia sesion
+      Then Visualiza el dashboard de administrador
+      When Navega al menu de 'settings'
+      When Esperar '3000'
+      Then Verificar que las redes sociales esten bien configuradas
+
+    @only
+    Scenario: Inicio sesión, Modifico el acceso a los post, visualizar que la configuracion quedó aplicada
+      Given Un usuario administrador
+      When Inicia sesion
+      Then Visualiza el dashboard de administrador
+      When Navega al menu de 'publish'
+      When seleccionar la primera página del listado de páginas
+      When seleccionar el boton settings
+      When seleccionar el desplegable de acceso a la pagina
+      When seleccionar el boton settings
+      When Dar clic en el boton de actualizar
+      And Vuelve al dashboard
+      When Navega al menu de 'publish'
+      When seleccionar la primera página del listado de páginas
+      When seleccionar el boton settings
+      Then Verifica que el acceso a la pagina sea para solo miembros
+      When Esperar '5000'
+
 
