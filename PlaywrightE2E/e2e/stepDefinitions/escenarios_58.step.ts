@@ -2,8 +2,14 @@ import { Given, When, Then, After } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import { IPlaywrightWorld } from "../world";
 import fs from "fs";
-
 const adminPrefixUrl = "/ghost/#";
+
+Given(
+  "Given Se esta usando la version 5.80.0 de Ghost",
+  async function (this: IPlaywrightWorld) {
+    this.init("5.80.0");
+  }
+);
 
 Given("Un usuario administrador", async function (this: IPlaywrightWorld) {
   this.adminUser = process.env.ADMIN_USER!;
@@ -655,7 +661,7 @@ Then(
 
 Then(
   "tomar una captura de pantalla con nombre {string} y guardarla en {string}",
-  async function (imageName: string, folder: string) {
+  async function (this: IPlaywrightWorld, imageName: string, folder: string) {
     const screenshotPath = `./screenshots/${folder}/screenshot-${Date.now()}-${imageName}.png`;
     if (!fs.existsSync(`./screenshots/${folder}`)) {
       fs.mkdirSync(`./screenshots/${folder}`, { recursive: true });
