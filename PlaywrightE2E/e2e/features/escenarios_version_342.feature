@@ -2,9 +2,9 @@ Feature: Escearios Version 3.42.0
 
 
     Background:
-        Given Se esta usando la version 3.42.0 de Ghost
+        Given Se esta usando la version '3.42.0' de Ghost
 
-
+    @342
     Scenario: Inicio Sesion - Cambiar Tema - Crear post - Visualizar Contenido
         Given Un usuario administrador
         When Inicia sesion
@@ -12,12 +12,12 @@ Feature: Escearios Version 3.42.0
         When Cambia el tema
         Then Visualiza que el tema cambio
         When Navega al menu de 'post'
-        And Crea 'un articulo '
+        And Crea 'un articulo'
         And Con titulo Prueba-'post'
         And Publica el contenido
         Then Verifica que el contenido se visualiza de manera correcta
 
-
+    @342
     Scenario: Inicio Sesion - Crear Etiqueta - Crear Post - Visualizar Contenido
         Given Un usuario administrador
         When Inicia sesion
@@ -27,11 +27,12 @@ Feature: Escearios Version 3.42.0
         And Tiene nombre aleatorio
         Then Verifica que la etiqueta se cree correctamente
         When Navega al menu de 'post'
-        And Crea 'un articulo '
+        And Crea 'un articulo'
         And Con titulo Prueba-'post'
         And Publica el contenido
         Then Verifica que el contenido se visualiza de manera correcta
 
+    @342
     Scenario: Iniciar sesion - programar un post - validar que se programe correctamente
         Given Un usuario administrador
         When Inicia sesion
@@ -44,7 +45,7 @@ Feature: Escearios Version 3.42.0
         And Navega al menu de 'post'
         Then Visualiza que el contenido se ha programado correctamente
 
-
+    @342
     Scenario Outline: Iniciar sesión, crear post, crear etiqueta, asignar etiqueta a post, validar post con etiqueta en admin
         Given Un usuario administrador
         When Inicia sesion
@@ -80,6 +81,7 @@ Feature: Escearios Version 3.42.0
             | titulo-post   | nombre-etiqueta |
             | post-etiqueta | New tag         |
 
+    @342
     Scenario: Iniciar sesión, crear metadata para google, validar que la etiqueta esté bien creada
         Given Un usuario administrador
         When Inicia sesion
@@ -91,7 +93,7 @@ Feature: Escearios Version 3.42.0
         When Edita metadata de la pagina
         Then Valida que se haya modificado la metadata de la página
 
-
+    @342
     Scenario Outline: Iniciar sesión, crea un miembro, crea un post, cambia el acceso del contenido a solo miembros, valida que el contenido es solo para miembros
         Given Un usuario administrador
         When Inicia sesion
@@ -107,25 +109,30 @@ Feature: Escearios Version 3.42.0
         And Navega al menu de 'post'
         Then Visualizar contenido de miembros
 
+    @342
     Scenario: Iniciar sesión, crear un miembro, editar miembro, validar cambio en miembro
         Given Un usuario administrador
         When Inicia sesion
         Then Visualiza el dashboard de administrador
         When Navega al menu de 'members'
         And Crea 'un miembro'
+        And Navega a la seccion principal
         When Navega al menu de 'members'
         And Buscar el miembro
         Then Editar miembro
+        And Navega a la seccion principal
         When Navega al menu de 'members'
         And Buscar el miembro
         Then Visualiza que el miembro se edito correctamente
 
+    @342
     Scenario: Inicar sesion, crear miembro, cambiar valor del newsletter, validar que se actualizo correctamente
         Given Un usuario administrador
         When Inicia sesion
         Then Visualiza el dashboard de administrador
         When Navega al menu de 'members'
         And Crea un miembro con newsletters desactivado
+        And Navega a la seccion principal
         When Navega al menu de 'members'
         And Buscar el miembro
         Then Visualiza que el miembro se creo correctamente

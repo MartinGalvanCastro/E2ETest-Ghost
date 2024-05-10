@@ -25,13 +25,16 @@ export interface CucumberWorldConstructorParams {
  */
 export interface IPlaywrightWorld extends World {
   page: Page;
+  baseUrl: string;
   urls: Record<string, string>;
+  version: string;
   adminUser?: string;
   adminPassword?: string;
   playwrightOptions?: PlaywrightTestOptions;
   dataGenerator: Faker;
   init(url: string): Promise<void>;
   teardown(): Promise<void>;
+  isLatestVersion(): boolean;
 }
 
 /**
@@ -39,10 +42,12 @@ export interface IPlaywrightWorld extends World {
  */
 class PlaywrightWorld extends World implements IPlaywrightWorld {
   debug = false;
+  baseUrl = "";
   urls: Record<string, string> = {
     "5.80.0": "https://ghost-al42.onrender.com",
-    "3.42.0": "https://ghost-al342.onrender.com",
+    "3.42.0": "http://localhost:2368", //TODO: Update this to use the deployed version
   };
+  version = "";
   browser!: Browser;
   browserContext!: BrowserContext;
   page!: Page;
@@ -61,6 +66,8 @@ class PlaywrightWorld extends World implements IPlaywrightWorld {
     if (!url) {
       throw new Error(`URL not found for version: ${version}`);
     }
+    this.version = version;
+    this.baseUrl = url;
     const headless = process.env.HEAD !== "1";
     this.browser = await chromium.launch({
       headless,
@@ -81,10 +88,14 @@ class PlaywrightWorld extends World implements IPlaywrightWorld {
     this.browserContext.close();
     this.browser.close();
   }
+
+  isLatestVersion() {
+    return this.version === "5.80.0";
+  }
 }
 
 setWorldConstructor(PlaywrightWorld);
-setDefaultTimeout(10000);
+setDefaultTimeout(20 * 1000);
 
 After(async function (this: IPlaywrightWorld) {
   await this.teardown();

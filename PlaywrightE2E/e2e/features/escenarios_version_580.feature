@@ -1,8 +1,9 @@
 Feature: Escearios Version 5.80.0
 
   Background:
-    Given Se esta usando la version 5.80.0 de Ghost
+    Given Se esta usando la version '5.80.0' de Ghost
 
+  @580
   Scenario Outline: Inicio Sesion - Cambiar Tema - Crear Contenido - Visualizar Contenido
     Given Un usuario administrador
     When Inicia sesion
@@ -20,6 +21,7 @@ Feature: Escearios Version 5.80.0
       | una pagina      | page |
       | un articulo     | post |
 
+  @580
   Scenario Outline: Inicio Sesion - Crear Etiqueta - Crear Contenido - Visualizar Contenido
     Given Un usuario administrador
     When Inicia sesion
@@ -39,6 +41,7 @@ Feature: Escearios Version 5.80.0
       | una pagina      | page |
       | un articulo     | post |
 
+  @580
   Scenario Outline: Iniciar sesion - programar un contenido - validar que se programe correctamente
     Given Un usuario administrador
     When Inicia sesion
@@ -56,6 +59,7 @@ Feature: Escearios Version 5.80.0
       | una pagina      | page |
       | un articulo     | post |
 
+  @580
   Scenario Outline: Iniciar sesión, crear post, crear etiqueta, asignar etiqueta a post, validar post con etiqueta en admin
     Given Un usuario administrador
     When Inicia sesion
@@ -96,6 +100,7 @@ Feature: Escearios Version 5.80.0
       | titulo-post   | nombre-etiqueta |
       | post-etiqueta | New tag         |
 
+  @580
   Scenario Outline: Iniciar sesión, crea un miembro, crea un contenido, cambia el acceso del contenido a solo miembros, valida que el contenido es solo para miembros
     Given Un usuario administrador
     When Inicia sesion
@@ -116,6 +121,7 @@ Feature: Escearios Version 5.80.0
       | un articulo     | post |
       | una pagina      | page |
 
+  @580
   Scenario: Iniciar sesión, crear un miembro, editar miembro, validar cambio en miembro
     Given Un usuario administrador
     When Inicia sesion
@@ -129,6 +135,7 @@ Feature: Escearios Version 5.80.0
     And Buscar el miembro
     Then Visualiza que el miembro se edito correctamente
 
+  @580
   Scenario: Iniciar sesión, crear un miembro, eliminar miembro, validar que el miembro fue eliminado
     Given Un usuario administrador
     When Inicia sesion
@@ -141,6 +148,7 @@ Feature: Escearios Version 5.80.0
     When Navega al menu de 'members'
     Then Visualiza que el miembro se elimino
 
+  @580
   Scenario: Inicar sesion, crear miembro, cambiar valor del newsletter, validar que se actualizo correctamente
     Given Un usuario administrador
     When Inicia sesion
@@ -151,6 +159,7 @@ Feature: Escearios Version 5.80.0
     And Buscar el miembro
     Then Visualiza que el miembro se creo correctamente
 
+  @580
   Scenario: Iniciar sesión, crear metadata para google, validar que la etiqueta esté bien creada
     Given Un usuario administrador
     When Inicia sesion
@@ -162,6 +171,7 @@ Feature: Escearios Version 5.80.0
     When Edita metadata de la pagina
     Then Valida que se haya modificado la metadata de la página
 
+  @580
   Scenario: Inicio sesion, hacer un sitio privado, visualizar sitio privado
     Given Un usuario administrador
     When Inicia sesion
