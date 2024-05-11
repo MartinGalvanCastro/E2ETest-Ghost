@@ -3,7 +3,7 @@ Feature: Escearios Version 5.80.0
   Background:
     Given Se esta usando la version '5.80.0' de Ghost
 
-  @580
+  @580 #2
   Scenario Outline: Inicio Sesion - Cambiar Tema - Crear Contenido - Visualizar Contenido
     Given Un usuario administrador
     When Inicia sesion
@@ -21,7 +21,7 @@ Feature: Escearios Version 5.80.0
       | una pagina      | page |
       | un articulo     | post |
 
-  @580
+  @580 #2
   Scenario Outline: Inicio Sesion - Crear Etiqueta - Crear Contenido - Visualizar Contenido
     Given Un usuario administrador
     When Inicia sesion
@@ -41,7 +41,7 @@ Feature: Escearios Version 5.80.0
       | una pagina      | page |
       | un articulo     | post |
 
-  @580
+  @580 #2
   Scenario Outline: Iniciar sesion - programar un contenido - validar que se programe correctamente
     Given Un usuario administrador
     When Inicia sesion
@@ -59,7 +59,7 @@ Feature: Escearios Version 5.80.0
       | una pagina      | page |
       | un articulo     | post |
 
-  @580
+  @580 #1
   Scenario Outline: Iniciar sesión, crear post, crear etiqueta, asignar etiqueta a post, validar post con etiqueta en admin
     Given Un usuario administrador
     When Inicia sesion
@@ -100,7 +100,7 @@ Feature: Escearios Version 5.80.0
       | titulo-post   | nombre-etiqueta |
       | post-etiqueta | New tag         |
 
-  @580
+  @580 #2
   Scenario Outline: Iniciar sesión, crea un miembro, crea un contenido, cambia el acceso del contenido a solo miembros, valida que el contenido es solo para miembros
     Given Un usuario administrador
     When Inicia sesion
@@ -181,4 +181,75 @@ Feature: Escearios Version 5.80.0
     When seleccionar el boton settings
     When seleccionar el desplegable de acceso a la pagina
     When Esperar '5000'
+
+  @580
+  Scenario: Iniciar sesion - borrar un post - validar que el post fue eliminado
+    Given Un usuario administrador
+    When Inicia sesion
+    Then Visualiza el dashboard de administrador
+    When Navega al menu de 'post'
+    And Selecciona un post para editar
+    And Abre la configuracion del Post
+    And Borra el post
+    And Vuelve al dashboard
+    And Navega al menu de 'post'
+    Then Verifica que el post fue eliminado
+
+  @580
+  Scenario: Iniciar sesión, crear metadata para google, validar que la etiqueta esté bien creada
+    Given Un usuario administrador
+    When Inicia sesion
+    Then Visualiza el dashboard de administrador
+    When Navega al menu de 'settings'
+    When Esperar '5000'
+    Then tomar una captura de pantalla con nombre 'menu-setttings' y guardarla en 'escenario-metadata'
+    When Esperar '1000'
+    When Edita metadata de la pagina
+    Then Valida que se haya modificado la metadata de la página
+
+  @580
+  Scenario: Inicio sesion, hacer un sitio privado, visualizar sitio privado
+    Given Un usuario administrador
+    When Inicia sesion
+    Then Visualiza el dashboard de administrador
+    When Navega al menu de 'page'
+    When seleccionar la primera página del listado de páginas
+    When seleccionar el boton settings
+    When seleccionar el desplegable de acceso a la pagina
+    When seleccionar el boton settings
+    When Dar clic en el boton de actualizar
+    And Vuelve al dashboard
+    When Navega al menu de 'page'
+    When seleccionar la primera página del listado de páginas
+    When seleccionar el boton settings
+    Then Verifica que el acceso a la pagina sea para solo miembros
+    When Esperar '5000'
+
+  @580
+  Scenario: Inicio sesión, ingreso la información de redes sociales, visualizar que las redes sociales esten bien configuradas
+    Given Un usuario administrador
+    When Inicia sesion
+    Then Visualiza el dashboard de administrador
+    When Navega al menu de 'settings'
+    When Esperar '3000'
+    Then Verificar que las redes sociales esten bien configuradas
+
+  @580
+  Scenario: Inicio sesión, Modifico el acceso a los post, visualizar que la configuracion quedó aplicada
+    Given Un usuario administrador
+    When Inicia sesion
+    Then Visualiza el dashboard de administrador
+    When Navega al menu de 'publish'
+    When seleccionar la primera página del listado de páginas
+    When seleccionar el boton settings
+    When seleccionar el desplegable de acceso a la pagina
+    When seleccionar el boton settings
+    When Dar clic en el boton de actualizar
+    And Vuelve al dashboard
+    When Navega al menu de 'publish'
+    When seleccionar la primera página del listado de páginas
+    When seleccionar el boton settings
+    Then Verifica que el acceso a la pagina sea para solo miembros
+    When Esperar '5000'
+
 

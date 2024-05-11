@@ -804,10 +804,40 @@ When("Navega a la seccion principal", async function (this: IPlaywrightWorld) {
   this.page.goto(`${adminPrefixUrl}`);
 });
 
+let howManyPosts: number | undefined;
+When("Selecciona un post para editar", async function (this: IPlaywrightWorld) {
+  const conetido = await this.page.locator("h3.gh-content-entry-title").first();
+  tituloContenido = await conetido.innerText();
+  howManyPosts = await this.page.getByText(tituloContenido!).count();
+  await this.page.getByText(tituloContenido!).first().click();
+});
+
+When("Abre la configuracion del Post", async function (this: IPlaywrightWorld) {
+  await this.page.locator('button[title="Settings"]').click();
+});
+
+When("Borra el post", async function (this: IPlaywrightWorld) {
+  await this.page.getByText(/Delete post/i).click();
+  await this.page.waitForTimeout(500);
+  await this.page.getByText("Delete", { exact: true }).click();
+});
+
+Then(
+  "Verifica que el post fue eliminado",
+  async function (this: IPlaywrightWorld) {
+    expect(tituloContenido).toBeDefined();
+    expect(howManyPosts).toBeDefined();
+    await expect(this.page.getByText(tituloContenido!)).toHaveCount(
+      howManyPosts! - 1
+    );
+  }
+);
+
 After(() => {
   esTemaClaro = undefined;
   tituloContenido = undefined;
   randomTagName = undefined;
   nombreMiembro = undefined;
   newsLetterDesactivado = undefined;
+  howManyPosts = undefined;
 });

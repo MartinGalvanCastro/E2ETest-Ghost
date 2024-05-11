@@ -136,3 +136,16 @@ Feature: Escearios Version 3.42.0
         When Navega al menu de 'members'
         And Buscar el miembro
         Then Visualiza que el miembro se creo correctamente
+
+    @342
+    Scenario: Iniciar sesion - borrar un post - validar que el post fue eliminado
+        Given Un usuario administrador
+        When Inicia sesion
+        Then Visualiza el dashboard de administrador
+        When Navega al menu de 'post'
+        And Selecciona un post para editar
+        And Abre la configuracion del Post
+        And Borra el post
+        And Vuelve al dashboard
+        And Navega al menu de 'post'
+        Then Verifica que el post fue eliminado
