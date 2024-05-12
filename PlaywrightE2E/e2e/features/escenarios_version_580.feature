@@ -3,26 +3,34 @@ Feature: Escearios Version 5.80.0
   Background:
     Given Se esta usando la version '5.80.0' de Ghost
 
-  @580 #2
-  Scenario Outline: Inicio Sesion - Cambiar Tema - Crear Contenido - Visualizar Contenido
+  @580
+  Scenario: Inicio Sesion - Cambiar Tema - Crear una pagina - Visualizar pagina
     Given Un usuario administrador
     When Inicia sesion
     Then Visualiza el dashboard de administrador
     When Cambia el tema
     Then Visualiza que el tema cambio
-    When Navega al menu de '<menu>'
-    And Crea '<nuevo-contenido>'
-    And Con titulo Prueba-'<menu>'
+    When Navega al menu de 'page'
+    And Crea 'una pagina'
+    And Con titulo Prueba-'page'
     And Publica el contenido
     Then Verifica que el contenido se visualiza de manera correcta
 
-    Examples:
-      | nuevo-contenido | menu |
-      | una pagina      | page |
-      | un articulo     | post |
+  @580
+  Scenario: Inicio Sesion - Cambiar Tema - Crear un articulo - Visualizar articulo
+    Given Un usuario administrador
+    When Inicia sesion
+    Then Visualiza el dashboard de administrador
+    When Cambia el tema
+    Then Visualiza que el tema cambio
+    When Navega al menu de 'post'
+    And Crea 'un articulo'
+    And Con titulo Prueba-'post'
+    And Publica el contenido
+    Then Verifica que el contenido se visualiza de manera correcta
 
   @580 #2
-  Scenario Outline: Inicio Sesion - Crear Etiqueta - Crear Contenido - Visualizar Contenido
+  Scenario: Inicio Sesion - Crear Etiqueta - Crear una pagina - Visualizar la pagina
     Given Un usuario administrador
     When Inicia sesion
     Then Visualiza el dashboard de administrador
@@ -30,34 +38,54 @@ Feature: Escearios Version 5.80.0
     And Crea 'una etiqueta'
     And Tiene nombre aleatorio
     Then Verifica que la etiqueta se cree correctamente
-    When Navega al menu de '<menu>'
-    And Crea '<nuevo-contenido>'
-    And Con titulo Prueba-'<menu>'
+    When Navega al menu de 'page'
+    And Crea 'una pagina'
+    And Con titulo Prueba-'page'
     And Publica el contenido
     Then Verifica que el contenido se visualiza de manera correcta
 
-    Examples:
-      | nuevo-contenido | menu |
-      | una pagina      | page |
-      | un articulo     | post |
-
   @580 #2
-  Scenario Outline: Iniciar sesion - programar un contenido - validar que se programe correctamente
+  Scenario: Inicio Sesion - Crear Etiqueta - Crear un articulo - Visualizar articulo
     Given Un usuario administrador
     When Inicia sesion
     Then Visualiza el dashboard de administrador
-    When Navega al menu de '<menu>'
-    And Crea '<nuevo-contenido>'
-    And Con titulo Prueba-'<menu>'
+    When Navega al menu de 'etiqueta'
+    And Crea 'una etiqueta'
+    And Tiene nombre aleatorio
+    Then Verifica que la etiqueta se cree correctamente
+    When Navega al menu de 'post'
+    And Crea 'un articulo'
+    And Con titulo Prueba-'post'
+    And Publica el contenido
+    Then Verifica que el contenido se visualiza de manera correcta
+
+
+  @580 #2
+  Scenario: Iniciar sesion - programar una pagina - validar que se programe correctamente
+    Given Un usuario administrador
+    When Inicia sesion
+    Then Visualiza el dashboard de administrador
+    When Navega al menu de 'page'
+    And Crea 'una pagina'
+    And Con titulo Prueba-'page'
     And Programa el contenido
     And Vuelve al dashboard
-    And Navega al menu de '<menu>'
+    And Navega al menu de 'page'
     Then Visualiza que el contenido se ha programado correctamente
 
-    Examples:
-      | nuevo-contenido | menu |
-      | una pagina      | page |
-      | un articulo     | post |
+
+  @580 #2
+  Scenario: Iniciar sesion - programar un articulo - validar que se programe correctamente
+    Given Un usuario administrador
+    When Inicia sesion
+    Then Visualiza el dashboard de administrador
+    When Navega al menu de 'post'
+    And Crea 'un articulo'
+    And Con titulo Prueba-'post'
+    And Programa el contenido
+    And Vuelve al dashboard
+    And Navega al menu de 'post'
+    Then Visualiza que el contenido se ha programado correctamente
 
   @580 #1
   Scenario Outline: Iniciar sesión, crear post, crear etiqueta, asignar etiqueta a post, validar post con etiqueta en admin
@@ -101,25 +129,36 @@ Feature: Escearios Version 5.80.0
       | post-etiqueta | New tag         |
 
   @580 #2
+  Scenario Outline: Iniciar sesión, crea un miembro, crea una pagina , cambia el acceso de la pagina a solo miembros, valida que la pagina es solo para miembros
+    Given Un usuario administrador
+    When Inicia sesion
+    Then Visualiza el dashboard de administrador
+    When Navega al menu de 'members'
+    And Crea 'un miembro'
+    And Navega al menu de 'page'
+    And Crea 'una pagina'
+    And Con titulo Prueba-'page'-Members
+    And Con acceso privado
+    And Publica el contenido
+    When Vuelve al dashboard
+    And Navega al menu de 'page'
+    Then Visualizar contenido de miembros
+
+  @580 #2
   Scenario Outline: Iniciar sesión, crea un miembro, crea un contenido, cambia el acceso del contenido a solo miembros, valida que el contenido es solo para miembros
     Given Un usuario administrador
     When Inicia sesion
     Then Visualiza el dashboard de administrador
     When Navega al menu de 'members'
     And Crea 'un miembro'
-    And Navega al menu de '<menu>'
-    And Crea '<nuevo-contenido>'
-    And Con titulo Prueba-'<menu>'-Members
+    And Navega al menu de 'post'
+    And Crea 'un articulo'
+    And Con titulo Prueba-'post'-Members
     And Con acceso privado
     And Publica el contenido
     When Vuelve al dashboard
-    And Navega al menu de '<menu>'
+    And Navega al menu de 'post'
     Then Visualizar contenido de miembros
-
-    Examples:
-      | nuevo-contenido | menu |
-      | un articulo     | post |
-      | una pagina      | page |
 
   @580
   Scenario: Iniciar sesión, crear un miembro, editar miembro, validar cambio en miembro
@@ -182,7 +221,7 @@ Feature: Escearios Version 5.80.0
     When seleccionar el desplegable de acceso a la pagina
     When Esperar '5000'
 
-  @580
+  @580 @only
   Scenario: Iniciar sesion - borrar un post - validar que el post fue eliminado
     Given Un usuario administrador
     When Inicia sesion
