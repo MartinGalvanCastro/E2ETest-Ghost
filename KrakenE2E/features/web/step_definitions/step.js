@@ -353,158 +353,116 @@ Then('Ingreso link facebook', async function(){
 });
 
 Then('Ingreso link twitter', async function(){
-    // Buscar el campo de entrada de texto del enlace de Twitter dentro del div con el atributo data-testid="social-accounts"
     const twitterInput = await this.driver.$('input[placeholder="https://twitter.com/ghost"]');
 
-    // Verificar si se encontró el campo de entrada de texto del enlace de Twitter
     if (twitterInput) {
-        // Establecer el valor del texto en el campo de entrada de texto del enlace de Twitter
         await twitterInput.setValue('yourpage');
     } else {
-        // Lanzar un error si no se encontró el campo de entrada de texto del enlace de Twitter
         throw new Error('No se encontró el campo de entrada de texto para el enlace de Twitter');
     }
 });
 
 Then('Guardar la informacion de links', async function(){
-    // Buscar el botón "Save" dentro del div con el atributo data-testid="social-accounts"
     const saveButton = await this.driver.$('div[data-testid="social-accounts"] button[type="button"][class*="text-green"]');
 
-    // Verificar si se encontró el botón "Save"
     if (saveButton) {
-        // Hacer clic en el botón "Save"
         await saveButton.click();
     } else {
-        // Lanzar un error si no se encontró el botón "Save"
         throw new Error('No se encontró el botón "Save" en la sección de cuentas sociales');
     }
 });
 Then('Ingresa en Access', async function(){
-    // Buscar el botón "Edit" dentro del div con el atributo data-testid="access"
     const editButtonAccess = await this.driver.$('div[data-testid="access"] button[type="button"] > span');
 
-    // Verificar si se encontró el botón "Edit"
     if (editButtonAccess) {
-        // Hacer clic en el botón "Edit"
         await editButtonAccess.click();
     } else {
-        // Lanzar un error si no se encontró el botón "Edit"
         throw new Error('No se encontró el botón "Edit" en la sección de Access');
     }
 });
 
 Then('Seleccionar en subscription access el item nobody', async function(){
-    // Buscar el elemento que contiene el span con el texto "Nobody" utilizando el atributo data-value
     const nobodyElement = await this.driver.$('div[data-testid="select-option"] div[data-value="none"]');
 
-    // Verificar si se encontró el elemento
     if (nobodyElement) {
-        // Hacer clic en el elemento
         await nobodyElement.click();
     } else {
-        // Lanzar un error si no se encontró el elemento
         throw new Error('No se encontró el elemento con el texto "Nobody"');
     }
 });
 When('Entra a post', async function(){
-    // Seleccionar el enlace con el título "New post"
     const newPostLink = await this.driver.$('a[title="New post"]');
 
-    // Verificar si se encontró el enlace
     if (newPostLink) {
-        // Hacer clic en el enlace
         await newPostLink.click();
     } else {
-        // Lanzar un error si no se encontró el enlace
         throw new Error('No se encontró el enlace con el título "New post"');
     }
 });
 Then('Crea post', async function(){
-    // Seleccionar el textarea dentro del contenedor de título del editor
     const textarea = await this.driver.$('.gh-editor-title-container textarea');
 
-    // Verificar si se encontró el textarea
     if (textarea) {
-        // Limpiar el contenido actual del textarea
         await textarea.clearValue();
 
-        // Escribir el nuevo título en el textarea
         await textarea.setValue("¡Mi nuevo título!");
     } else {
-        // Lanzar un error si no se encontró el textarea
         throw new Error('No se encontró el textarea en el contenedor de título del editor');
     }
 });
 
 Then('Agrega descripcion', async function(){
-    // Encuentra el elemento de la descripción
     const descripcionElement = await this.driver.$('.koenig-react-editor');
 
-    // Inserta el texto en el elemento
     await descripcionElement.setValue('Esta es la descripción');
 });
 Then('Guardar post', async function(){
-    // Encuentra el botón "Publish" por su atributo data-test-button
     const publishButton = await this.driver.$('[data-test-button="publish-flow"]');
 
-    // Haz clic en el botón "Publish"
     await publishButton.click();
 
 });
 Then('Publicar post', async function(){
-    // Encuentra el botón "Publish" por su atributo data-test-button
     const publishButton = await this.driver.$('.gh-publish-cta');
 
-    // Haz clic en el botón "Publish"
     await publishButton.click();
 
 });
 Then('Confirmar post', async function(){
-    // Encuentra el botón "Publish" por su atributo data-test-button
     const publishButton = await this.driver.$('[data-test-button="confirm-publish"]');
 
-    // Haz clic en el botón "Publish"
     await publishButton.click();
 
 });
 
 Then('Entra a tags', async function(){
-    // Encuentra el botón "Publish" por su atributo data-test-button
     const entry = await this.driver.$('[data-test-nav="tags"]');
 
-    // Haz clic en el botón "Publish"
     await entry.click();
 
 });
 Then('Selecciona un tag', async function(){
-    // Encuentra el botón "Publish" por su atributo data-test-button
     const select = await this.driver.$('.tags-list');
 
-    // Haz clic en el botón "Publish"
     await select.click();
 
 });
 Then('Elimina el tag', async function(){
-    // Encuentra el botón "Publish" por su atributo data-test-button
     const elimacion = await this.driver.$('[data-test-button="delete-tag"]');
 
-    // Haz clic en el botón "Publish"
     await elimacion.click();
 
 });
 
 Then('Confirma eliminacion', async function(){
-    // Encuentra el botón "Publish" por su atributo data-test-button
     const confirmation = await this.driver.$('[data-test-task-button-state="idle"]');
 
-    // Haz clic en el botón "Publish"
     await confirmation.click();
 
 });
 
 
 Then('Modificar tag', async function(){
-    // Encuentra el botón "Publish" por su atributo data-test-button
     const modify = await this.driver.$('[data-test-input="tag-name"]');
 
 
@@ -513,7 +471,6 @@ Then('Modificar tag', async function(){
 });
 
 Then('Guardar modificacion tag', async function(){
-    // Encuentra el botón "Publish" por su atributo data-test-button
     const modify = await this.driver.$('[data-test-task-button-state="idle"]');
 
 
