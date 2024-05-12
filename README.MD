@@ -49,7 +49,8 @@ URL del despligue: https://ghost-al42.onrender.com
     ```
 
 - Kraken:
-  -Como Correr:
+
+  - Como Correr:
   1. Instalar dependencias (Desde la carpeta KrakenE2E)
     ```bash
     npm install
@@ -58,7 +59,22 @@ URL del despligue: https://ghost-al42.onrender.com
     ```bash
     npx kraken-node run
     ```
+## Pruebas de Regresion:
+- Como Correr:
 
+Nota: En caso de usar npm, remplazar `yarn` por `npm run`
+1. Seguir los mismos del 1 al 2 de Playwright
+2. Desde la carpeta PlaywrightE2E ejecutar el comando:
+   ```bash
+   yarn regresion
+   ```
+3. Si se desea eliminar capturas pasadas, esta el comando:
+   ```bash
+    yarn clean:regresion
+   ```
+4. Para generar los reportes correr el comando:
+  ```
+  ```
 
 ## Release:
 ```
