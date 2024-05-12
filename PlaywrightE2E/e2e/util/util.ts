@@ -6,7 +6,7 @@ export const tomarPantallazo = async (
   imageName: string,
   folder: string
 ) => {
-  const screenshotPath = `./screenshots/${folder}/screenshot-${Date.now()}-${imageName}.png`;
+  const screenshotPath = `./screenshots/${folder}/${imageName}.png`;
   if (!fs.existsSync(`./screenshots/${folder}`)) {
     fs.mkdirSync(`./screenshots/${folder}`, { recursive: true });
   }
