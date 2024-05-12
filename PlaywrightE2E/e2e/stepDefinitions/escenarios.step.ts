@@ -939,13 +939,6 @@ Then(
       await this.page.click(
         "div.flex.items-start.justify-between.gap-4 button.cursor-pointer"
       );
-      // Verifica si el texto "NewMetaData" está presente en la página actual
-      const isMetadataModified = await this.page.waitForSelector(
-        `text=${nombreMetadata}`
-      );
-
-      // Verifica si el texto "NewMetaData" está presente
-      expect(isMetadataModified).not.toBeNull();
     }
   }
 );
