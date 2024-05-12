@@ -1,8 +1,29 @@
-import { Given, When, Then, After } from "@cucumber/cucumber";
+import {
+  Given,
+  When,
+  Then,
+  After,
+  Before,
+  ITestCaseHookParameter,
+} from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import { IPlaywrightWorld } from "../world";
-
+import { tomarPantallazo } from "../util";
+import exp from "constants";
 const adminPrefixUrl = "/ghost/#";
+
+let scenarioName: string;
+Before(function ({ pickle }: ITestCaseHookParameter) {
+  scenarioName = pickle.name;
+});
+
+Given(
+  "Se esta usando la version {string} de Ghost",
+  async function (this: IPlaywrightWorld, version: string) {
+    scenarioName += ` - ${version}`;
+    await this.init(version);
+  }
+);
 
 Given("Un usuario administrador", async function (this: IPlaywrightWorld) {
   this.adminUser = process.env.ADMIN_USER!;
@@ -10,46 +31,84 @@ Given("Un usuario administrador", async function (this: IPlaywrightWorld) {
 });
 
 When("Inicia sesion", async function (this: IPlaywrightWorld) {
-  await this.page.goto("/ghost");
-  await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/signin`);
-  await this.page.getByLabel("Email address").fill(this.adminUser!);
-  await this.page.getByLabel("Password").fill(this.adminPassword!);
-  await this.page.getByRole("button", { name: /Sign in/i }).click();
-  await this.page.waitForURL(`${this.baseUrl}/ghost/#/dashboard`);
+  if (this.isLatestVersion()) {
+    await this.page.goto("/ghost");
+    await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/signin`);
+    await tomarPantallazo(this, "login-sin-datos", scenarioName);
+    await this.page.getByLabel("Email address").fill(this.adminUser!);
+    await this.page.getByLabel("Password").fill(this.adminPassword!);
+    await tomarPantallazo(this, "login-con-datos", scenarioName);
+    await this.page.getByRole("button", { name: /Sign in/i }).click();
+    await tomarPantallazo(this, "login-cargando", scenarioName);
+    await this.page.waitForURL(`${this.baseUrl}/ghost/#/dashboard`);
+    await tomarPantallazo(this, "login-completado", scenarioName);
+  } else {
+    await this.page.goto(`${this.baseUrl}${adminPrefixUrl}/signin`);
+    await tomarPantallazo(this, "login-sin-datos", scenarioName);
+    await this.page.getByPlaceholder("Email address").fill(this.adminUser!);
+    await this.page.getByPlaceholder("Password").fill(this.adminPassword!);
+    await tomarPantallazo(this, "login-con-datos", scenarioName);
+    await this.page.getByRole("button", { name: /Sign in/i }).click();
+    await tomarPantallazo(this, "login-cargando", scenarioName);
+    await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/site`);
+    await tomarPantallazo(this, "login-completado", scenarioName);
+  }
 });
 
 Then(
   "Visualiza el dashboard de administrador",
   async function (this: IPlaywrightWorld) {
-    await expect(this.page).toHaveURL(
-      `${this.baseUrl}${adminPrefixUrl}/dashboard`
-    );
-    await expect(
-      this.page.getByRole("heading", { name: /Dashboard/i })
-    ).toBeVisible();
+    await tomarPantallazo(this, "visualiza-dashboard", scenarioName);
+    if (this.isLatestVersion()) {
+      await expect(this.page).toHaveURL(
+        `${this.baseUrl}${adminPrefixUrl}/dashboard`
+      );
+      await expect(
+        this.page.getByRole("heading", { name: /Dashboard/i })
+      ).toBeVisible();
+    } else {
+      await expect(this.page).toHaveURL(
+        `${this.baseUrl}${adminPrefixUrl}/site`
+      );
+      await expect(this.page.locator("h1.site-title")).toBeDefined();
+    }
   }
 );
 
 let esTemaClaro: boolean | undefined;
 When("Cambia el tema", async function (this: IPlaywrightWorld) {
-  const disabledAtributo = await this.page
-    .locator("head link#dark-styles")
-    .getAttribute("disabled");
-  esTemaClaro = disabledAtributo !== null;
-  await this.page.locator("div.nightshift-toggle").click();
-  await this.page.waitForTimeout(1 * 1000);
+  await tomarPantallazo(this, "antes-cambio-tema", scenarioName);
+  if (this.isLatestVersion()) {
+    const disabledAtributo = await this.page
+      .locator("head link#dark-styles")
+      .getAttribute("disabled");
+    esTemaClaro = disabledAtributo !== null;
+    await this.page.locator("div.nightshift-toggle").click();
+    await this.page.waitForTimeout(1 * 1000);
+  }
+  await tomarPantallazo(this, "despues-cambio-tema", scenarioName);
 });
 
 Then("Visualiza que el tema cambio", async function (this: IPlaywrightWorld) {
-  const cambioTema = await this.page
-    .locator("head link#dark-styles")
-    .getAttribute("disabled");
-  expect(cambioTema !== null).toBe(!esTemaClaro);
+  if (this.isLatestVersion()) {
+    const cambioTema = await this.page
+      .locator("head link#dark-styles")
+      .getAttribute("disabled");
+    expect(cambioTema !== null).toBe(!esTemaClaro);
+  }
+  await tomarPantallazo(this, "valida-cambio-tema", scenarioName);
 });
 
+let enterCounter = 0;
 When(
   "Navega al menu de {string}",
   async function (this: IPlaywrightWorld, contenido: string) {
+    enterCounter += 1;
+    await tomarPantallazo(
+      this,
+      `antes-navegar-${enterCounter}-vez`,
+      scenarioName
+    );
     switch (contenido) {
       case "post":
         await this.page
@@ -76,16 +135,39 @@ When(
         );
         break;
       case "members":
-        await this.page.locator('a[data-test-nav="members"]').click();
-        await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/members`);
+        if (this.isLatestVersion()) {
+          await this.page.locator('a[data-test-nav="members"]').click();
+          await this.page.waitForURL(
+            `${this.baseUrl}${adminPrefixUrl}/members`
+          );
+        } else {
+          await this.page.getByRole("link", { name: "Members" }).click();
+          await this.page.waitForURL(
+            `${this.baseUrl}${adminPrefixUrl}/members`
+          );
+        }
         break;
       case "settings":
-        await this.page.click('a[href="#/settings/"]');
-        await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/settings`);
+        if (this.isLatestVersion()) {
+          await this.page.click('a[href="#/settings/"]');
+          await this.page.waitForURL(
+            `${this.baseUrl}${adminPrefixUrl}/settings`
+          );
+        } else {
+          await this.page.getByRole("link", { name: "General" }).click();
+          await this.page.waitForURL(
+            `${this.baseUrl}${adminPrefixUrl}/settings/general`
+          );
+        }
         break;
       default:
         throw new Error(`No se reconoce el contenido ${contenido}`);
     }
+    await tomarPantallazo(
+      this,
+      `despues-navegar-${enterCounter}-vez`,
+      scenarioName
+    );
   }
 );
 
@@ -99,19 +181,35 @@ When(
         await this.page.waitForURL(
           `${this.baseUrl}${adminPrefixUrl}/editor/**`
         );
+        await tomarPantallazo(this, "va-a-crear-un-post", scenarioName);
         break;
       case "una pagina":
-        await this.page.getByRole("link", { name: /New page/i }).click();
-        await this.page.waitForURL(
-          `${this.baseUrl}${adminPrefixUrl}/editor/**`
-        );
+        if (this.isLatestVersion()) {
+          await this.page.getByRole("link", { name: /New page/i }).click();
+          await this.page.waitForURL(
+            `${this.baseUrl}${adminPrefixUrl}/editor/**`
+          );
+        } else {
+          await this.page
+            .getByRole("link", { name: "New page", exact: true })
+            .click();
+          await this.page.waitForURL(
+            `${this.baseUrl}${adminPrefixUrl}/editor/**`
+          );
+        }
+
+        await tomarPantallazo(this, "va-a-crear-una-page", scenarioName);
         break;
       case "una etiqueta":
         await this.page.waitForTimeout(4000);
-        await this.page.getByRole("link", { name: "New tag" }).click();
+        await this.page
+          .getByRole("link", { name: "New tag", exact: true })
+          .click();
         await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/tags/new`);
+        await tomarPantallazo(this, "va-a-crear-una-etiqueta", scenarioName);
         break;
       case "un miembro":
+        await tomarPantallazo(this, "va-a-crear-un-miembro", scenarioName);
         await this.page.getByRole("link", { name: "New member" }).click();
         nombreMiembro = this.dataGenerator.person.fullName();
         await this.page.waitForURL(
@@ -121,6 +219,7 @@ When(
         await this.page
           .getByLabel("Email")
           .fill(this.dataGenerator.internet.email());
+        await tomarPantallazo(this, "crea-miembro-datos", scenarioName);
         await this.page.getByRole("button", { name: "Save" }).click();
         await expect(this.page.getByText(/Created/i)).toBeVisible();
         break;
@@ -140,8 +239,13 @@ When(
     await this.page
       .getByPlaceholder(`${titlePlaceholder} title`)
       .fill(tituloContenido);
-    await this.page.getByText("New").click();
+    if (this.isLatestVersion()) {
+      await this.page.getByText("New").click();
+    } else {
+      await this.page.getByText("New", { exact: true }).click();
+    }
     await this.page.waitForTimeout(2 * 1000);
+    await tomarPantallazo(this, `datos-${contenido}`, scenarioName);
   }
 );
 
@@ -154,45 +258,81 @@ When(
     await this.page
       .getByPlaceholder(`${titlePlaceholder} title`)
       .fill(tituloContenido);
-    await this.page.getByText("New").click();
+    if (this.isLatestVersion()) {
+      await this.page.getByText("New").click();
+    } else {
+      await this.page.getByText("New", { exact: true }).click();
+    }
+    await tomarPantallazo(this, `datos-${contenido}`, scenarioName);
     await this.page.waitForTimeout(2 * 1000);
   }
 );
 
 When("Publica el contenido", async function (this: IPlaywrightWorld) {
+  await tomarPantallazo(this, "antes-de-publicar", scenarioName);
   await this.page.getByRole("button", { name: /Publish/i }).click();
-  await this.page
-    .getByRole("button", { name: /Continue, final review/i })
-    .click();
-  await this.page
-    .locator('button[data-test-button="confirm-publish"]')
-    .click({ force: true });
+  await tomarPantallazo(this, "click-publicar", scenarioName);
+
+  if (this.isLatestVersion()) {
+    await this.page
+      .getByRole("button", { name: /Continue, final review/i })
+      .click();
+    await tomarPantallazo(this, "confirma-publicacion", scenarioName);
+    await this.page
+      .locator('button[data-test-button="confirm-publish"]')
+      .click({ force: true });
+  } else {
+    await tomarPantallazo(this, "confirma-publicacion", scenarioName);
+    await this.page
+      .locator(
+        "button.gh-btn.gh-btn-blue.gh-publishmenu-button.gh-btn-icon.ember-view"
+      )
+      .click();
+  }
+  await tomarPantallazo(this, "publica-el-contenido", scenarioName);
 });
 
 Then(
   "Verifica que el contenido se visualiza de manera correcta",
   async function (this: IPlaywrightWorld) {
-    await this.page.locator("a.gh-post-bookmark-wrapper").click();
-    await expect(this.page.getByTitle(tituloContenido!)).toBeDefined();
+    if (this.isLatestVersion()) {
+      await this.page.locator("a.gh-post-bookmark-wrapper").click();
+      await expect(this.page.getByTitle(tituloContenido!)).toBeDefined();
+    } else {
+      await this.page.getByRole("link", { name: "View Post" }).click();
+    }
   }
 );
 
 let randomTagName: string | undefined;
 When("Tiene nombre aleatorio", async function (this: IPlaywrightWorld) {
+  await tomarPantallazo(this, "crear-etiqueta-nombre-vacio", scenarioName);
   randomTagName = this.dataGenerator.lorem.words(3);
   await this.page.getByLabel("Name").fill(randomTagName);
+  await tomarPantallazo(this, "crear-etiqueta-nombre-no-vacio", scenarioName);
 });
 
 When(
   "Tiene nombre de etiqueta New Tag",
   async function (this: IPlaywrightWorld) {
+    await tomarPantallazo(
+      this,
+      "crear-etiqueta-nombre-vacio-new-tag",
+      scenarioName
+    );
     let TagName = "New Tag";
     await this.page.getByLabel("Name").fill(TagName);
     await this.page.getByRole("button", { name: "Save" }).click();
     await this.page.waitForTimeout(2000);
+    await tomarPantallazo(
+      this,
+      "crear-etiqueta-nombre-no-vacio-new-tag",
+      scenarioName
+    );
     await this.page.getByRole("link", { name: "Tags" }).first().click();
     await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/tags`);
-    await expect(this.page.getByText("New Tag")).toBeDefined();
+    await tomarPantallazo(this, "etiqueta-new-tag-recien-creada", scenarioName);
+    expect(this.page.getByText("New Tag")).toBeDefined();
   }
 );
 
@@ -200,33 +340,62 @@ Then(
   "Verifica que la etiqueta se cree correctamente",
   async function (this: IPlaywrightWorld) {
     expect(randomTagName).toBeDefined();
+    await tomarPantallazo(this, "antes-guardar-etiqueta", scenarioName);
     await this.page.getByRole("button", { name: "Save" }).click();
+    await tomarPantallazo(this, "despues-guardar-etiqueta", scenarioName);
     await this.page.waitForTimeout(2000);
     await this.page.getByRole("link", { name: "Tags" }).first().click();
     await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/tags`);
-    await expect(this.page.getByText(randomTagName!)).toBeDefined();
+    await tomarPantallazo(this, "listado-etiquetas-verificar", scenarioName);
+    expect(this.page.getByText(randomTagName!)).toBeDefined();
   }
 );
 
 When("Programa el contenido", async function (this: IPlaywrightWorld) {
+  await tomarPantallazo(this, "programar-contenido", scenarioName);
   await this.page.getByRole("button", { name: /Publish/i }).click();
-  await this.page.getByRole("button", { name: "Right now" }).click();
-  await this.page.getByText("Schedule for later").click({ force: true });
-  const timeValue = await this.page
-    .locator("input[data-test-date-time-picker-time-input]")
-    .inputValue();
-  const [hour, minute] = timeValue.split(":").map(parseInt);
-  const newTime = `${hour < 10 ? `0${hour}` : hour}:${minute}`;
-  await this.page
-    .locator("input[data-test-date-time-picker-time-input]")
-    .fill(newTime);
-  await this.page
-    .getByRole("button", { name: /Continue, final review/i })
-    .click();
-  await this.page
-    .locator('button[data-test-button="confirm-publish"]')
-    .click({ force: true });
-  await expect(this.page.locator("a.gh-post-bookmark-wrapper")).toBeVisible();
+  if (this.isLatestVersion()) {
+    await this.page.getByRole("button", { name: "Right now" }).click();
+    await this.page.getByText("Schedule for later").click({ force: true });
+  } else {
+    await this.page.getByText("Schedule it for later").click({ force: true });
+  }
+  await tomarPantallazo(this, "programar-contenido-seleccionado", scenarioName);
+  if (this.isLatestVersion()) {
+    const timeValue = await this.page
+      .locator("input[data-test-date-time-picker-time-input]")
+      .inputValue();
+    const [hour, minute] = timeValue.split(":").map(parseInt);
+    const newTime = `${hour < 10 ? `0${hour}` : hour}:${minute}`;
+    await this.page
+      .locator("input[data-test-date-time-picker-time-input]")
+      .fill(newTime);
+    await tomarPantallazo(this, "programar-contenido-nueva-hora", scenarioName);
+    await this.page
+      .getByRole("button", { name: /Continue, final review/i })
+      .click();
+    await tomarPantallazo(
+      this,
+      "programar-contenido-confirmacion",
+      scenarioName
+    );
+    await this.page
+      .locator('button[data-test-button="confirm-publish"]')
+      .click({ force: true });
+    await tomarPantallazo(this, "programar-contenido-confirmado", scenarioName);
+    await expect(this.page.locator("a.gh-post-bookmark-wrapper")).toBeVisible();
+  } else {
+    await tomarPantallazo(this, "programar-contenido-nueva-hora", scenarioName);
+    await tomarPantallazo(
+      this,
+      "programar-contenido-confirmacion",
+      scenarioName
+    );
+    await this.page
+      .getByRole("button", { name: "Schedule", exact: true })
+      .click();
+    await tomarPantallazo(this, "programar-contenido-confirmado", scenarioName);
+  }
 });
 
 When("Vuelve al dashboard", async function (this: IPlaywrightWorld) {
@@ -235,17 +404,100 @@ When("Vuelve al dashboard", async function (this: IPlaywrightWorld) {
 });
 
 When(
+  "seleccionar la primera página del listado de páginas",
+  async function (this: IPlaywrightWorld) {
+    // Seleccionar la primera pagina del listado de paginas
+    await tomarPantallazo(this, "seleccionar-primera-pagina", scenarioName);
+    const divElement = await this.page.$(".posts-list");
+    if (divElement) {
+      const firstChild = await divElement.$(":first-child");
+      if (firstChild) {
+        await firstChild.click();
+        await tomarPantallazo(
+          this,
+          "primera-pagina-seleccionada",
+          scenarioName
+        );
+      } else {
+        throw new Error("El div con clase 'posts-list' no tiene hijos");
+      }
+    } else {
+      throw new Error("No se encontró el div con clase 'posts-list'");
+    }
+  }
+);
+
+When("seleccionar el boton settings", async function (this: IPlaywrightWorld) {
+  // Dar clic en el botón "Settings"
+  await this.page.getByRole("button", { name: "Settings" }).click();
+  await tomarPantallazo(this, "selecciona-boton-settings", scenarioName);
+});
+
+When(
+  "seleccionar el desplegable de acceso a la pagina",
+  async function (this: IPlaywrightWorld) {
+    await tomarPantallazo(this, "selecciona-dropdown-acceso", scenarioName);
+    try {
+      // Esperar a que aparezca el elemento <select>
+      const selectElement = await this.page.waitForSelector(
+        'select[data-test-select="post-visibility"]'
+      );
+
+      // Verificar que el elemento <select> se haya encontrado correctamente
+      if (selectElement) {
+        // Hacer clic en el elemento <select> para abrir las opciones
+        await selectElement.click();
+
+        // Esperar un breve momento para que las opciones se carguen si es necesario
+        await this.page.waitForTimeout(1000);
+
+        // Encuentra la opción "Members only" y haz clic en ella
+        const optionElement = await selectElement.selectOption({
+          value: "members",
+        });
+        await tomarPantallazo(
+          this,
+          "selecciona-dropdown-acceso-opcion",
+          scenarioName
+        );
+      } else {
+        throw new Error(
+          "No se encontró el elemento select con el atributo especificado."
+        );
+      }
+    } catch (error) {
+      console.error("Error al seleccionar el desplegable:", error);
+    }
+  }
+);
+
+When(
+  "Dar clic en el boton de actualizar",
+  async function (this: IPlaywrightWorld) {
+    //Dar click en el boton Update
+    await tomarPantallazo(this, "click-actualizar", scenarioName);
+    await this.page.getByRole("button", { name: "Update" }).click();
+  }
+);
+
+When(
   "Asigna la etiqueta {string} al post {string}",
   async function (
     this: IPlaywrightWorld,
     etiqueta: string,
     tituloPost: string
   ) {
+    await tomarPantallazo(this, "va-asignar-etiqueta-post", scenarioName);
     // Seleccionar el ultimo post creado
     const divElement = await this.page.$(".posts-list");
     if (divElement) {
       const firstChild = await divElement.$(":first-child");
       if (firstChild) {
+        await tomarPantallazo(
+          this,
+          "selecciona-post-asignar-etiqueta",
+          scenarioName
+        );
         await firstChild.click();
       } else {
         throw new Error("El div con clase 'posts-list' no tiene hijos");
@@ -254,6 +506,7 @@ When(
       throw new Error("No se encontró el div con clase 'posts-list'");
     }
 
+    await tomarPantallazo(this, "asignar-etiqueta-settings-post", scenarioName);
     // Dar clic en el botón "Settings"
     await this.page.getByRole("button", { name: "Settings" }).click();
 
@@ -263,6 +516,7 @@ When(
     );
     if (inputElement) {
       await inputElement.fill(etiqueta);
+      await tomarPantallazo(this, "va-a-agregar-etiqueta", scenarioName);
     } else {
       throw new Error(
         "No se encontró el elemento input con la clase especificada"
@@ -275,6 +529,7 @@ When(
       'li.ember-power-select-option[role="option"]'
     );
     if (newTagElements.length > 0) {
+      await tomarPantallazo(this, "agrega-etiqueta", scenarioName);
       await newTagElements[0].click();
     } else {
       console.error('No se pudo encontrar el elemento "New Tag"');
@@ -288,17 +543,29 @@ When(
 
     //Dar click en el boton Update
     await this.page.getByRole("button", { name: "Update" }).click();
-
+    await tomarPantallazo(this, "actualiza-etiqueta-agregada", scenarioName);
     await this.page.waitForTimeout(6000);
+  }
+);
+
+Then(
+  "Verifica que el acceso a la pagina sea para solo miembros",
+  async function (this: IPlaywrightWorld) {
+    await tomarPantallazo(this, "verifica-acceso-a-miembros", scenarioName);
+    // Verificar que la etiqueta se haya asignado
+    const tagElement = this.page.getByText("Members only");
+    expect(tagElement).toBeDefined();
+    await this.page.waitForTimeout(4000);
   }
 );
 
 Then(
   "Visualiza que el contenido se ha programado correctamente",
   async function (this: IPlaywrightWorld) {
+    await tomarPantallazo(this, "verifica-contenido-programado", scenarioName);
     let locators = await this.page.getByText(tituloContenido!).all();
     locators = locators.filter(async (locator) => {
-      return await locator.getByText("Scheduled");
+      return locator.getByText("Scheduled");
     });
     expect(locators.length).toBeGreaterThan(0);
   }
@@ -311,12 +578,22 @@ Then(
     tituloPost: string,
     etiqueta: string
   ) {
+    await tomarPantallazo(
+      this,
+      "busca-post-para-verificar-etiqueta",
+      scenarioName
+    );
     // Seleccionar el ultimo post creado
     const divElement = await this.page.$(".posts-list");
     if (divElement) {
       const firstChild = await divElement.$(":first-child");
       if (firstChild) {
         await firstChild.click();
+        await tomarPantallazo(
+          this,
+          "selecciona-post-con-etiqueta-asignada",
+          scenarioName
+        );
       } else {
         throw new Error("El div con clase 'posts-list' no tiene hijos");
       }
@@ -326,11 +603,26 @@ Then(
 
     // Dar clic en el botón "Settings"
     await this.page.getByRole("button", { name: "Settings" }).click();
-
+    await tomarPantallazo(this, "verifica-post-tiene-etiqueta", scenarioName);
     // Verificar que la etiqueta se haya asignado
-    const tagElement = await this.page.getByText(etiqueta);
+    const tagElement = this.page.getByText(etiqueta);
     expect(tagElement).toBeDefined();
     await this.page.waitForTimeout(4000);
+  }
+);
+
+Then(
+  "Verificar que las redes sociales esten bien configuradas",
+  async function (this: IPlaywrightWorld) {
+    await tomarPantallazo(
+      this,
+      "verifica-redes-sociales-agregadas",
+      scenarioName
+    );
+    //la pagina contiene el texto "Social accounts"
+    this.page.getByText("Social accounts");
+    this.page.getByText("https://www.facebook.com/ghost");
+    this.page.getByText("https://twitter.com/ghost");
   }
 );
 
@@ -342,9 +634,11 @@ Then(
     tituloPost: string,
     etiqueta: string
   ) {
+    await tomarPantallazo(this, "va-a-verifica-post-y-etiqueta", scenarioName);
     const postViewLink = await this.page.$(".post-view-link");
     if (postViewLink) {
       await postViewLink.click();
+      await tomarPantallazo(this, "verifica-post-y-etiqueta", scenarioName);
     } else {
       throw new Error(
         "No se encontró el elemento con la clase 'post-view-link'"
@@ -362,33 +656,39 @@ Then(
 When(
   "Navega a la pagina de etiquetas",
   async function (this: IPlaywrightWorld) {
+    await tomarPantallazo(this, "antes-navegar-etiquetas", scenarioName);
     await this.page.getByRole("link", { name: "Tags" }).click();
     await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/tags`);
+    await tomarPantallazo(this, "despues-navegar-etiquetas", scenarioName);
   }
 );
 
 Then(
   "Verifica que la etiqueta {string} se haya creado",
   async function (this: IPlaywrightWorld, etiqueta: string) {
-    await expect(this.page.getByText(etiqueta)).toBeDefined();
+    expect(this.page.getByText(etiqueta)).toBeDefined();
   }
 );
 
 When(
   "Edita la etiqueta {string}",
   async function (this: IPlaywrightWorld, etiqueta: string) {
+    await tomarPantallazo(this, "va-a-editar-etiqueta", scenarioName);
     await this.page.getByText(etiqueta).click();
     await this.page.waitForURL(
       `${this.baseUrl}${adminPrefixUrl}/tags/${etiqueta}`
     );
+    await tomarPantallazo(this, "esta-editando-etiqueta", scenarioName);
   }
 );
 
 When(
   "Cambia el nombre de la etiqueta a {string}",
   async function (this: IPlaywrightWorld, nuevoNombre: string) {
+    await tomarPantallazo(this, "nombre-viejo-etiqueta", scenarioName);
     await this.page.getByLabel("Name").fill(nuevoNombre);
     await this.page.getByRole("button", { name: "Save" }).click();
+    await tomarPantallazo(this, "nombre-nuevo-etiqueta", scenarioName);
   }
 );
 
@@ -399,14 +699,15 @@ Then(
     etiqueta: string,
     nuevoNombre: string
   ) {
-    await expect(this.page.getByText(nuevoNombre)).toBeDefined();
+    expect(this.page.getByText(nuevoNombre)).toBeDefined();
   }
 );
 
 // Cerrar pestana actual abierta
 When("Cierra la pestana actual", async function (this: IPlaywrightWorld) {
-  const context = await this.page.context();
-  const pages = await context.pages();
+  await tomarPantallazo(this, "va-a-cerrar-esta-pestania", scenarioName);
+  const context = this.page.context();
+  const pages = context.pages();
 
   if (pages.length > 1) {
     // Verificar si hay más de una página abierta
@@ -421,16 +722,19 @@ When("Cierra la pestana actual", async function (this: IPlaywrightWorld) {
     //  "No se puede cerrar la pestaña actual porque solo hay una página abierta."
     //);
   }
+  await tomarPantallazo(this, "cerro-la-pestania", scenarioName);
 });
 
 When(
   "Modifica el el titulo de post a {string}",
   async function (this: IPlaywrightWorld, contenido: string) {
+    await tomarPantallazo(this, "va-a-modificar-un-post", scenarioName);
     const divElement = await this.page.$(".posts-list");
     if (divElement) {
       const firstChild = await divElement.$(":first-child");
       if (firstChild) {
         await firstChild.click();
+        await tomarPantallazo(this, "post-a-modificar", scenarioName);
       } else {
         throw new Error("El div con clase 'posts-list' no tiene hijos");
       }
@@ -442,20 +746,24 @@ When(
       contenido.charAt(0).toUpperCase() + contenido.slice(1);
     tituloContenido = `${titlePlaceholder}`;
     await this.page.getByPlaceholder(`Post title`).fill(tituloContenido);
+    await tomarPantallazo(this, "post-modificado", scenarioName);
     //Dar click en el boton Update
     await this.page.getByRole("button", { name: "Update" }).click();
     await this.page.waitForTimeout(2000);
+    await tomarPantallazo(this, "post-actualizado", scenarioName);
   }
 );
 
 When(
   "Elimina el post {string}",
   async function (this: IPlaywrightWorld, contenido: string) {
+    await tomarPantallazo(this, "va-a-eliminar-un-post", scenarioName);
     const divElement = await this.page.$(".posts-list");
     if (divElement) {
       const firstChild = await divElement.$(":first-child");
       if (firstChild) {
         await firstChild.click();
+        await tomarPantallazo(this, "post-a-eliminar", scenarioName);
       } else {
         throw new Error("El div con clase 'posts-list' no tiene hijos");
       }
@@ -490,51 +798,109 @@ When(
 );
 
 When("Con acceso privado", async function (this: IPlaywrightWorld) {
-  await this.page.locator("button[data-test-psm-trigger]").click();
-  const dropdown = this.page.locator(
-    "select[data-test-select=post-visibility]"
-  );
-  await dropdown.selectOption({ value: "members" });
+  await tomarPantallazo(this, "se-va-a-modificar-acceso", scenarioName);
+  if (this.isLatestVersion()) {
+    await this.page.locator("button[data-test-psm-trigger]").click();
+    await tomarPantallazo(this, "se-abre-la-configuracion", scenarioName);
+    const dropdown = this.page.locator(
+      "select[data-test-select=post-visibility]"
+    );
+    await dropdown.selectOption({ value: "members" });
+    await tomarPantallazo(
+      this,
+      "se-cambia-el-acceso-a-solo-miembros",
+      scenarioName
+    );
+  } else {
+    await tomarPantallazo(this, "se-abre-la-configuracion", scenarioName);
+    await this.page.locator("button.post-settings").click();
+    const dropdown = this.page.locator('select[optiontargetpath="name"]');
+    await dropdown.selectOption({ value: "members" });
+    await tomarPantallazo(
+      this,
+      "se-cambia-el-acceso-a-solo-miembros",
+      scenarioName
+    );
+    await this.page.locator('button[aria-label="Close"]').click();
+  }
 });
 
 Then(
   "Visualizar contenido de miembros",
   async function (this: IPlaywrightWorld) {
+    await tomarPantallazo(
+      this,
+      "se-va-a-visualizar-contenido-miembros",
+      scenarioName
+    );
     await this.page.getByText("All access").click();
-    await this.page.getByRole("option", { name: "Members-only", exact: true });
-    await expect(
-      await this.page.locator("div.posts-list.gh-list").count()
-    ).toBeGreaterThanOrEqual(1);
+    await this.page
+      .getByRole("option", { name: "Members-only", exact: true })
+      .click();
+    await this.page.waitForTimeout(2 * 1000);
+    await tomarPantallazo(this, "se-cambia-filtro", scenarioName);
+    if (this.isLatestVersion()) {
+      await expect(
+        await this.page.locator("div.posts-list.gh-list").count()
+      ).toBeGreaterThanOrEqual(1);
+    } else {
+      await expect(
+        await this.page.locator("ol.gh-list").count()
+      ).toBeGreaterThanOrEqual(1);
+    }
   }
 );
 
 When("Buscar el miembro", async function (this: IPlaywrightWorld) {
+  await tomarPantallazo(this, "va-a-buscar-un-miembro", scenarioName);
   expect(nombreMiembro).toBeDefined();
   await this.page.getByText(nombreMiembro!).click();
   await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/members/**`);
+  await tomarPantallazo(this, "encuentra-el-miembro", scenarioName);
 });
 
 Then("Editar miembro", async function (this: IPlaywrightWorld) {
+  await tomarPantallazo(this, "va-a-editar-el-miembro", scenarioName);
   nombreMiembro = this.dataGenerator.person.fullName();
   await this.page.getByLabel("Name").fill(nombreMiembro);
+  await tomarPantallazo(this, "edito-el-miembro", scenarioName);
   await this.page.getByRole("button", { name: "Save" }).click();
+  await tomarPantallazo(this, "guardo-el-cambio", scenarioName);
   await this.page.waitForTimeout(1 * 1000);
-  await this.page.getByTitle(nombreMiembro);
+  this.page.getByTitle(nombreMiembro);
 });
 
 Then(
   "Visualiza que el miembro se edito correctamente",
   async function (this: IPlaywrightWorld) {
     expect(nombreMiembro).toBeDefined();
-    await expect(this.page.getByTitle(nombreMiembro!)).toBeDefined();
+    expect(this.page.getByTitle(nombreMiembro!)).toBeDefined();
   }
 );
 
 Then("Eliminar miembro", async function (this: IPlaywrightWorld) {
-  await this.page.locator('button[data-test-button="member-actions"]').click();
-  await this.page.locator('button[data-test-button="delete-member"]').click();
-  await this.page.locator('button[data-test-button="confirm"]').click();
-  await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/members`);
+  await tomarPantallazo(this, "va-a-eliminar-el-miembro", scenarioName);
+  if (this.isLatestVersion()) {
+    await this.page
+      .locator('button[data-test-button="member-actions"]')
+      .click();
+    await tomarPantallazo(this, "selecciona-opciones", scenarioName);
+    await this.page.locator('button[data-test-button="delete-member"]').click();
+    await tomarPantallazo(this, "eliminar-miembro", scenarioName);
+    await this.page.locator('button[data-test-button="confirm"]').click();
+    await tomarPantallazo(this, "confirmar-eliminar-miembro", scenarioName);
+    await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/members`);
+  } else {
+    await tomarPantallazo(this, "selecciona-opciones", scenarioName);
+    await this.page.getByRole("button", { name: "Delete Member" }).click();
+    await tomarPantallazo(this, "eliminar-miembro", scenarioName);
+    const modal = await this.page.locator("div.modal-footer");
+    await modal.getByText("Delete Member").first().click();
+    await tomarPantallazo(this, "confirmar-eliminar-miembro", scenarioName);
+    await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/members`);
+  }
+
+  await tomarPantallazo(this, "miembro-eliminado", scenarioName);
 });
 
 Then(
@@ -549,6 +915,7 @@ let newsLetterDesactivado: boolean | undefined;
 When(
   "Crea un miembro con newsletters desactivado",
   async function (this: IPlaywrightWorld) {
+    await tomarPantallazo(this, "va-a-crear-un-nuevo-miembro", scenarioName);
     await this.page.getByRole("link", { name: "New member" }).click();
     nombreMiembro = this.dataGenerator.person.fullName();
     await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/members/**`);
@@ -557,7 +924,9 @@ When(
       .getByLabel("Email")
       .fill(this.dataGenerator.internet.email());
     await this.page.locator("div.for-switch").click({ force: true });
+    await tomarPantallazo(this, "crea-miembro-sin-newsletter", scenarioName);
     await this.page.getByRole("button", { name: "Save" }).click();
+    await tomarPantallazo(this, "gaurda-miembro", scenarioName);
     newsLetterDesactivado = true;
     await expect(this.page.getByText(/Created/i)).toBeVisible();
   }
@@ -567,48 +936,111 @@ Then(
   "Visualiza que el miembro se creo correctamente",
   async function (this: IPlaywrightWorld) {
     expect(nombreMiembro).toBeDefined();
-    await expect(this.page.locator("h2[data-test-screen-title]")).toHaveText(
-      nombreMiembro!
-    );
-    if (newsLetterDesactivado) {
+    if (this.isLatestVersion()) {
+      await expect(this.page.locator("h2[data-test-screen-title]")).toHaveText(
+        nombreMiembro!
+      );
+      if (newsLetterDesactivado) {
+        await expect(
+          this.page.locator('input[data-test-checkbox="member-subscribed"]')
+        ).not.toBeChecked();
+      }
+    } else {
       await expect(
-        this.page.locator('input[data-test-checkbox="member-subscribed"]')
-      ).not.toBeChecked();
+        this.page.getByRole("heading", { name: nombreMiembro! }).first()
+      ).toBeVisible();
     }
   }
 );
 
+let nombreMetadata: string | undefined;
 When("Edita metadata de la pagina", async function (this: IPlaywrightWorld) {
-  await this.page.click(
-    "div.flex.items-start.justify-between.gap-4 button.cursor-pointer"
-  );
-  await this.page.waitForTimeout(1000);
-  // Selecciona todo el texto existente en el campo de entrada y presiona la tecla "Backspace" para borrarlo
-  await this.page.keyboard.press("Control+A");
-  await this.page.keyboard.press("Backspace");
-  await this.page.waitForTimeout(1000);
-  await this.page.keyboard.type("NewMetaData");
-  await this.page.waitForTimeout(1000);
-  console.log("Metadata de la página modificada");
-
-  await this.page.getByRole("button", { name: "save" }).click();
-  //await this.page.click('button:has(span:has-text("Save"))');
-  // await this.page.waitForTimeout(6000);
+  nombreMetadata = this.dataGenerator.lorem.word();
+  await tomarPantallazo(this, "va-a-editar-metadata", scenarioName);
+  if (this.isLatestVersion()) {
+    await this.page.click(
+      "div.flex.items-start.justify-between.gap-4 button.cursor-pointer"
+    );
+    await this.page.waitForTimeout(1000);
+    // Selecciona todo el texto existente en el campo de entrada y presiona la tecla "Backspace" para borrarlo
+    await this.page.keyboard.press("Control+A");
+    await this.page.keyboard.press("Backspace");
+    await this.page.waitForTimeout(1000);
+    await this.page.keyboard.type(nombreMetadata);
+    await this.page.waitForTimeout(1000);
+    //console.log("Metadata de la página modificada");
+    await tomarPantallazo(this, "edito-metadata", scenarioName);
+    await this.page.getByRole("button", { name: "save" }).click();
+    await tomarPantallazo(this, "guarda-cambios-metadata", scenarioName);
+    //await this.page.click('button:has(span:has-text("Save"))');
+    // await this.page.waitForTimeout(6000);
+  } else {
+    await this.page.getByRole("button", { name: "Expand" }).nth(3).click();
+    await this.page.getByLabel("Meta title").fill(nombreMetadata);
+    await tomarPantallazo(this, "edito-metadata", scenarioName);
+    await this.page.getByRole("button", { name: "Save settings" }).click();
+    await tomarPantallazo(this, "guarda-cambios-metadata", scenarioName);
+  }
 });
 
 Then(
   "Valida que se haya modificado la metadata de la página",
   async function (this: IPlaywrightWorld) {
-    await this.page.click(
-      "div.flex.items-start.justify-between.gap-4 button.cursor-pointer"
-    );
-    // Verifica si el texto "NewMetaData" está presente en la página actual
-    const isMetadataModified = await this.page.waitForSelector(
-      "text=NewMetaData"
-    );
+    if (this.isLatestVersion()) {
+      expect(nombreMetadata).toBeDefined();
+      await this.page.click(
+        "div.flex.items-start.justify-between.gap-4 button.cursor-pointer"
+      );
+      // Verifica si el texto "NewMetaData" está presente en la página actual
+      const isMetadataModified = await this.page.waitForSelector(
+        `text=${nombreMetadata}`
+      );
 
-    // Verifica si el texto "NewMetaData" está presente
-    expect(isMetadataModified).not.toBeNull();
+      // Verifica si el texto "NewMetaData" está presente
+      expect(isMetadataModified).not.toBeNull();
+    }
+  }
+);
+
+When("Esperar {string}", async (tiempo: string) => {
+  const tiempoEnMilisegundos = parseInt(tiempo);
+  await new Promise((resolve) => setTimeout(resolve, tiempoEnMilisegundos));
+});
+
+When("Navega a la seccion principal", async function (this: IPlaywrightWorld) {
+  await tomarPantallazo(this, "navega-seccion-principal", scenarioName);
+  this.page.goto(`${adminPrefixUrl}`);
+});
+
+let howManyPosts: number | undefined;
+When("Selecciona un post para editar", async function (this: IPlaywrightWorld) {
+  await tomarPantallazo(this, "selecciona-un-post-para-editar", scenarioName);
+  const conetido = await this.page.locator("h3.gh-content-entry-title").first();
+  tituloContenido = await conetido.innerText();
+  howManyPosts = await this.page.getByText(tituloContenido!).count();
+  await this.page.getByText(tituloContenido!).first().click();
+  await tomarPantallazo(this, "selecciono-post-para-editar", scenarioName);
+});
+
+When("Abre la configuracion del Post", async function (this: IPlaywrightWorld) {
+  await this.page.locator('button[title="Settings"]').click();
+  await tomarPantallazo(this, "abre-configuracion-post", scenarioName);
+});
+
+When("Borra el post", async function (this: IPlaywrightWorld) {
+  await this.page.getByText(/Delete post/i).click();
+  await tomarPantallazo(this, "confirmacion-borrar-post", scenarioName);
+  await this.page.waitForTimeout(500);
+  await this.page.getByText("Delete", { exact: true }).click();
+  await tomarPantallazo(this, "post-borrado", scenarioName);
+});
+
+Then(
+  "Verifica que el post fue eliminado",
+  async function (this: IPlaywrightWorld) {
+    expect(tituloContenido).toBeDefined();
+    expect(howManyPosts).toBeDefined();
+    await expect(this.page.getByText(tituloContenido!)).toBeDefined();
   }
 );
 
@@ -618,4 +1050,5 @@ After(() => {
   randomTagName = undefined;
   nombreMiembro = undefined;
   newsLetterDesactivado = undefined;
+  howManyPosts = undefined;
 });

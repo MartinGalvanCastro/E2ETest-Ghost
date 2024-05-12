@@ -16,7 +16,6 @@ import type {
 import "dotenv/config";
 import { fa, Faker, faker } from "@faker-js/faker";
 
-
 export interface CucumberWorldConstructorParams {
   parameters: { [key: string]: string };
 }
@@ -26,13 +25,16 @@ export interface CucumberWorldConstructorParams {
  */
 export interface IPlaywrightWorld extends World {
   page: Page;
-  baseUrl:string;
+  baseUrl: string;
+  urls: Record<string, string>;
+  version: string;
   adminUser?: string;
   adminPassword?: string;
   playwrightOptions?: PlaywrightTestOptions;
-  dataGenerator:Faker;
-  init(): Promise<void>;
+  dataGenerator: Faker;
+  init(url: string): Promise<void>;
   teardown(): Promise<void>;
+  isLatestVersion(): boolean;
 }
 
 /**
@@ -40,12 +42,16 @@ export interface IPlaywrightWorld extends World {
  */
 class PlaywrightWorld extends World implements IPlaywrightWorld {
   debug = false;
-  baseUrl = "https://ghost-al42.onrender.com";
+  baseUrl = "";
+  urls: Record<string, string> = {
+    "5.80.0": "https://ghost-al42.onrender.com",
+    "3.42.0": "https://ghost-3-42-0-27pl.onrender.com",
+  };
+  version = "";
   browser!: Browser;
   browserContext!: BrowserContext;
   page!: Page;
-  dataGenerator!:Faker;
-
+  dataGenerator!: Faker;
 
   constructor(options: IWorldOptions) {
     super(options);
@@ -55,13 +61,19 @@ class PlaywrightWorld extends World implements IPlaywrightWorld {
   /**
    * Call this in a Before Hook
    */
-  async init() {
+  async init(version: string) {
+    const url = this.urls[version];
+    if (!url) {
+      throw new Error(`URL not found for version: ${version}`);
+    }
+    this.version = version;
+    this.baseUrl = url;
     const headless = process.env.HEAD !== "1";
     this.browser = await chromium.launch({
       headless,
     });
     this.browserContext = await this.browser.newContext({
-      baseURL: this.baseUrl,
+      baseURL: url,
     });
     this.page = await this.browserContext.newPage();
     await this.page.goto("");
@@ -76,14 +88,14 @@ class PlaywrightWorld extends World implements IPlaywrightWorld {
     this.browserContext.close();
     this.browser.close();
   }
+
+  isLatestVersion() {
+    return this.version === "5.80.0";
+  }
 }
 
 setWorldConstructor(PlaywrightWorld);
-setDefaultTimeout(10000);
-
-Before(async function (this: IPlaywrightWorld) {
-  await this.init();
-});
+setDefaultTimeout(20 * 1000);
 
 After(async function (this: IPlaywrightWorld) {
   await this.teardown();
