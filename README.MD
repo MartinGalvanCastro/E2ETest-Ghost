@@ -10,9 +10,10 @@ URL del despligue: https://ghost-al42.onrender.com
 - Diego Fonseca - da.fonseca@uniandes.edu.co
 - Juan Sebastián Cervantes Restrepo - js.cervantes@uniandes.edu.co
 
-## Funcionalidades y Escenarios desarolladas:
+## Detalles Por Entrega
 
-https://github.com/MartinGalvanCastro/E2ETest-Ghost/wiki
+- Entrega 5: https://github.com/MartinGalvanCastro/E2ETest-Ghost/wiki
+- Entrega 6:
 
 ## Instrucciones de instalacion:
 
@@ -46,53 +47,17 @@ https://github.com/MartinGalvanCastro/E2ETest-Ghost/wiki
     yarn cucumber # Correr sin abrir navegador
     yarn cucumber:headed # Correr abriendo un navegador
     ```
-# Proyecto Base de Automatización Kraken
 
-Este es un proyecto base para automatización de pruebas utilizando Kraken-Node.
-
-## Pasos para crear el proyecto base:
-
-1. Desinstala las versiones globales de las herramientas que puedan estar instaladas:
-
-   ```bash
-   npm uninstall -g android-platform-tools
-   npm uninstall -g @cucumber/cucumber
-   npm uninstall -g kraken-node
-   npm uninstall -g appium
-   ```
-
-2. Inicializa un nuevo proyecto npm:
-
-   ```bash
-   npm init -y
-   ```
-
-3. Instala las dependencias necesarias:
-
-   ```bash
-   npm install kraken-node
-   npm install android-platform-tools
-   npm install appium
-   ```
-
-4. Genera el esqueleto del proyecto con Kraken-Node:
-   ```bash
-   npx kraken-node gen
-   ```
-
-## Para ejecutar:
-
-Ejecuta las pruebas con el siguiente comando:
-```bash
-npx kraken-node run
-1. Instalar dependencias (Desde la carpeta KrakenE2E)
-```bash
-npm install
-```
-2. Ejecutar comando
-```bash
-npx kraken-node run
-```
+- Kraken:
+  -Como Correr:
+  1. Instalar dependencias (Desde la carpeta KrakenE2E)
+    ```bash
+    npm install
+    ```
+  2. Ejecutar las pruebas:
+    ```bash
+    npx kraken-node run
+    ```
 
 
 ## Release:
