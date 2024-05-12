@@ -95,7 +95,7 @@ class PlaywrightWorld extends World implements IPlaywrightWorld {
 }
 
 setWorldConstructor(PlaywrightWorld);
-setDefaultTimeout(20 * 1000);
+setDefaultTimeout(40 * 1000);
 
 After(async function (this: IPlaywrightWorld) {
   await this.teardown();

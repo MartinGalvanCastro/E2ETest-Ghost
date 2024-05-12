@@ -9,18 +9,20 @@ import {
 import { expect } from "@playwright/test";
 import { IPlaywrightWorld } from "../world";
 import { tomarPantallazo } from "../util";
-import exp from "constants";
 const adminPrefixUrl = "/ghost/#";
 
 let scenarioName: string;
 Before(function ({ pickle }: ITestCaseHookParameter) {
-  scenarioName = pickle.name;
+  const tags = pickle.tags.map((tag) => tag.name);
+  const scenario = tags[0];
+  scenarioName = `${scenario}-v`;
 });
 
 Given(
   "Se esta usando la version {string} de Ghost",
   async function (this: IPlaywrightWorld, version: string) {
-    scenarioName += ` - ${version}`;
+    scenarioName += version;
+    console.log(`\nScenario: ${scenarioName}\n`);
     await this.init(version);
   }
 );

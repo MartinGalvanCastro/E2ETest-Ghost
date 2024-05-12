@@ -1,7 +1,7 @@
 const commonPath = "./e2e/";
 
 const common = [
-  `${commonPath}/features/escenarios.feature`,
+  `${commonPath}/features/reg.feature`,
   "--require-module ts-node/register", //typescript cucumber
   `--require ${commonPath}/stepDefinitions/*.ts`,
   `--require ${commonPath}/world/PlaywrightWorld.ts`,
