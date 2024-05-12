@@ -45,7 +45,7 @@ class PlaywrightWorld extends World implements IPlaywrightWorld {
   baseUrl = "";
   urls: Record<string, string> = {
     "5.80.0": "https://ghost-al42.onrender.com",
-    "3.42.0": "http://localhost:2368", //TODO: Update this to use the deployed version
+    "3.42.0": "https://ghost-3-42-0-27pl.onrender.com",
   };
   version = "";
   browser!: Browser;
