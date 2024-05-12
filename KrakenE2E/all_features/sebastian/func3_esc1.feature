@@ -1,17 +1,12 @@
-@user1 @web
-  Scenario Outline: Inicio Sesion - Invitar nuevo personal- visualizar personal administrador
+  @user1 @web
+  Scenario Outline: Inicio Sesion, visualizo el dashboard, navego a settings, ingreso en make site private, presiono el boton de desactivar sitio privado, guardo la informacion y verifico que este bien guardada
       Given I navigate to page "<URL>"
       And I wait for 2 seconds
       When Inicia sesion
       Then Visualiza el dashboard de administrador
-      When Navega a settings
-      And Ingresa en 'staff'
-      Then Realiza invitacion a los colaboradores deseados
-      And Asigna un rol al colaborador
-      And Envia la invitacion
-      Then Verifica que la invitacion se envia correctamente
+      And Ir a settings
+      And Ingresa en make site private
       And I wait for 2 seconds
-
-      Examples:
-          | nuevo-contenido | menu |
-      
+      Then Presionar botón de desactivar sitio privado
+      Then Guardo la informacion para sitio privado
+      And I wait for 5 seconds
