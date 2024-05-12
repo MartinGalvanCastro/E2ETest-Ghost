@@ -22,8 +22,8 @@
   "scripts": {
     "cucumber": "cucumber-js",
     "cucumber:headed": "HEAD=1 cucumber-js",
-    "cucumber:580": "yarn cucumber --tags=\"@580\"",
-    "cucumber:342": "yarn cucumber --tags=\"@342\"",
-    "regresion":"yarn cucumber --tags=\"@REG\""
+    "cucumber:580": "npm run cucumber --tags=\"@580\"",
+    "cucumber:342": "npm run cucumber --tags=\"@342\"",
+    "regresion": "npm run cucumber --tags=\"@REG\""
   }
 }
