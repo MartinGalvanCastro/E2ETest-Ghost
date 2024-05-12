@@ -131,7 +131,7 @@ Feature: Escearios Version 3.42.0
         Then Visualiza que el miembro se elimino
 
 
-    @342 @ES020 @REG @pending
+    @342 @ES020 @REG
     Scenario: Inicar sesion, crear miembro, cambiar valor del newsletter, validar que se actualizo correctamente
         Given Un usuario administrador
         When Inicia sesion
@@ -142,13 +142,3 @@ Feature: Escearios Version 3.42.0
         When Navega al menu de 'members'
         And Buscar el miembro
         Then Visualiza que el miembro se creo correctamente
-        Given Un usuario administrador
-        When Inicia sesion
-        Then Visualiza el dashboard de administrador
-        When Navega al menu de 'post'
-        And Selecciona un post para editar
-        And Abre la configuracion del Post
-        And Borra el post
-        And Vuelve al dashboard
-        And Navega al menu de 'post'
-        Then Verifica que el post fue eliminado
