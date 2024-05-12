@@ -4,8 +4,8 @@ Feature: Escearios Version 3.42.0
     Background:
         Given Se esta usando la version '3.42.0' de Ghost
 
-    @342
-    Scenario: Inicio Sesion - Cambiar Tema - Crear post - Visualizar Contenido
+    @342 @ES01
+    Scenario: Inicio Sesion - Cambiar Tema - Crear un articulo - Visualizar articulo
         Given Un usuario administrador
         When Inicia sesion
         Then Visualiza el dashboard de administrador
@@ -17,8 +17,8 @@ Feature: Escearios Version 3.42.0
         And Publica el contenido
         Then Verifica que el contenido se visualiza de manera correcta
 
-    @342
-    Scenario: Inicio Sesion - Crear Etiqueta - Crear Post - Visualizar Contenido
+    @342 @ES03
+    Scenario: Inicio Sesion - Crear Etiqueta - Crear un articulo - Visualizar articulo
         Given Un usuario administrador
         When Inicia sesion
         Then Visualiza el dashboard de administrador
@@ -32,8 +32,8 @@ Feature: Escearios Version 3.42.0
         And Publica el contenido
         Then Verifica que el contenido se visualiza de manera correcta
 
-    @342
-    Scenario: Iniciar sesion - programar un post - validar que se programe correctamente
+    @342 @ES05
+    Scenario: Iniciar sesion - programar un articulo - validar que se programe correctamente
         Given Un usuario administrador
         When Inicia sesion
         Then Visualiza el dashboard de administrador
@@ -45,8 +45,7 @@ Feature: Escearios Version 3.42.0
         And Navega al menu de 'post'
         Then Visualiza que el contenido se ha programado correctamente
 
-    @342
-    Scenario Outline: Iniciar sesión, crear post, crear etiqueta, asignar etiqueta a post, validar post con etiqueta en admin
+
         Given Un usuario administrador
         When Inicia sesion
         Then Visualiza el dashboard de administrador
@@ -81,7 +80,20 @@ Feature: Escearios Version 3.42.0
             | titulo-post   | nombre-etiqueta |
             | post-etiqueta | New tag         |
 
-    @342
+    @342 @ES09
+    Scenario: Iniciar sesion - borrar un post - validar que el post fue eliminado
+        Given Un usuario administrador
+        When Inicia sesion
+        Then Visualiza el dashboard de administrador
+        When Navega al menu de 'post'
+        And Selecciona un post para editar
+        And Abre la configuracion del Post
+        And Borra el post
+        And Vuelve al dashboard
+        And Navega al menu de 'post'
+        Then Verifica que el post fue eliminado
+
+    @342 @ES012
     Scenario: Iniciar sesión, crear metadata para google, validar que la etiqueta esté bien creada
         Given Un usuario administrador
         When Inicia sesion
@@ -93,8 +105,8 @@ Feature: Escearios Version 3.42.0
         When Edita metadata de la pagina
         Then Valida que se haya modificado la metadata de la página
 
-    @342
-    Scenario Outline: Iniciar sesión, crea un miembro, crea un post, cambia el acceso del contenido a solo miembros, valida que el contenido es solo para miembros
+    @342 @ES016
+    Scenario: Iniciar sesión, crea un miembro, crea un post, cambia el acceso del contenido a solo miembros, valida que el contenido es solo para miembros
         Given Un usuario administrador
         When Inicia sesion
         Then Visualiza el dashboard de administrador
@@ -109,7 +121,24 @@ Feature: Escearios Version 3.42.0
         And Navega al menu de 'post'
         Then Visualizar contenido de miembros
 
-    @342
+    @342 @ES017
+    Scenario: Iniciar sesión, crea un miembro, crea una pagina , cambia el acceso de la pagina a solo miembros, valida que la pagina es solo para miembros
+        Given Un usuario administrador
+        When Inicia sesion
+        Then Visualiza el dashboard de administrador
+        When Navega al menu de 'members'
+        And Crea 'un miembro'
+        And Navega al menu de 'page'
+        And Crea 'una pagina'
+        And Con titulo Prueba-'page'-Members
+        And Con acceso privado
+        And Publica el contenido
+        When Vuelve al dashboard
+        And Navega al menu de 'page'
+        Then Visualizar contenido de miembros
+
+
+    @342 @ES018
     Scenario: Iniciar sesión, crear un miembro, editar miembro, validar cambio en miembro
         Given Un usuario administrador
         When Inicia sesion
@@ -125,7 +154,7 @@ Feature: Escearios Version 3.42.0
         And Buscar el miembro
         Then Visualiza que el miembro se edito correctamente
 
-    @342
+    @342 @ES020
     Scenario: Inicar sesion, crear miembro, cambiar valor del newsletter, validar que se actualizo correctamente
         Given Un usuario administrador
         When Inicia sesion
@@ -136,9 +165,6 @@ Feature: Escearios Version 3.42.0
         When Navega al menu de 'members'
         And Buscar el miembro
         Then Visualiza que el miembro se creo correctamente
-
-    @342
-    Scenario: Iniciar sesion - borrar un post - validar que el post fue eliminado
         Given Un usuario administrador
         When Inicia sesion
         Then Visualiza el dashboard de administrador
