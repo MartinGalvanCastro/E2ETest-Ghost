@@ -8,6 +8,7 @@
     "lodash": "^4.17.21"
   },
   "scripts": {
-    "run": "backstop test  --config=\"backstop.js\" && Backstop approve"
+    "set_ref": "backstop test --config=\"backstop-test\" || backstop approve",
+    "run_reg": "backstop test --config=\"backstop-reg\""
   }
 }
