@@ -3,7 +3,7 @@
 Repositorio con pruebas E2E sobre un despliegue de Ghost en Render
 URL del despligue: https://ghost-al42.onrender.com
 
-Video Entega Semana 6:
+[Video Entega Semana 6](https://www.youtube.com/watch?v=F9P7sr8-opw)
 
 ## Sistema de incidencias:
 https://github.com/MartinGalvanCastro/MISW-4103-Pruebas-Automatizadas/issues
