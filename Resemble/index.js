@@ -70,6 +70,7 @@ function browser(b, info, index) {
   return `<div class=" browser" id="test0">
   <div class=" btitle">
       <h2>Browser: ${b}</h2>
+      <p>Data: ${JSON.stringify(info)}</p>
   </div>
   ${images.map((img, index) =>
 
