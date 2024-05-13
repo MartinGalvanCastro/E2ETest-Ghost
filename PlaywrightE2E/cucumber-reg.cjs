@@ -5,7 +5,6 @@ const common = [
   "--require-module ts-node/register", //typescript cucumber
   `--require ${commonPath}/stepDefinitions/*.ts`,
   `--require ${commonPath}/world/PlaywrightWorld.ts`,
-  "--fail-fast",
   "--format progress-bar",
 ].join(" ");
 

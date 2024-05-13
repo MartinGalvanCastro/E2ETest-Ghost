@@ -141,6 +141,7 @@ When(
             `${this.baseUrl}${adminPrefixUrl}/members`
           );
         } else {
+          await this.page.waitForTimeout(2*1000);
           await this.page.getByRole("link", { name: "Members" }).click();
           await this.page.waitForURL(
             `${this.baseUrl}${adminPrefixUrl}/members`
@@ -808,11 +809,15 @@ When("Buscar el miembro", async function (this: IPlaywrightWorld) {
 });
 
 Then("Editar miembro", async function (this: IPlaywrightWorld) {
+  await this.page.waitForTimeout(2*1000);
   await tomarPantallazo(this, photoName, scenarioName);
   nombreMiembro = this.dataGenerator.person.fullName();
   await this.page.getByLabel("Name").fill(nombreMiembro);
+  await this.page.waitForTimeout(2*1000);
   await tomarPantallazo(this, photoName, scenarioName);
+  await this.page.waitForTimeout(2*1000);
   await this.page.getByRole("button", { name: "Save" }).click();
+  await this.page.waitForTimeout(2*1000);
   await tomarPantallazo(this, photoName, scenarioName);
   await this.page.waitForTimeout(1 * 1000);
   this.page.getByTitle(nombreMiembro);
