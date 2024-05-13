@@ -6,12 +6,13 @@ const fs = require('fs');
 const path = require('path');
 
 const { viewportHeight, viewportWidth, browsers, options } = config;
-const dir = './results/ES01';
-const files = fs.readdirSync(dir);
-const images = files
-  .filter(file => path.extname(file).toLowerCase() === '.png')
-  .slice(0, Math.floor(files.length / 2));;
-console.log('images', images);
+const directoryPath = './../screenshots';
+const dir = './results';
+
+let escenarios = fs.readdirSync(directoryPath);
+escenarios = escenarios.filter(escenario => escenario !== '.gitkeep')
+let escenarioslength = escenarios.length / 2;
+let images;
 
 async function executeTest() {
   if (browsers.length === 0) {
@@ -24,34 +25,45 @@ async function executeTest() {
     if (!b in ['chromium', 'webkit', 'firefox']) {
       return;
     }
-    if (!fs.existsSync(`./results/ES01`)) {
-      fs.mkdirSync(`./results/ES01`, { recursive: true });
-    }
 
-    for (let img = 0; img < images.length; img++) {
-
-      const data = await compareImages(
-        fs.readFileSync(`./results/ES01/before-${img}.png`),
-        fs.readFileSync(`./results/ES01/after-${img}.png`),
-        options
-      );
-      resultInfo[b] = {
-        isSameDimensions: data.isSameDimensions,
-        dimensionDifference: data.dimensionDifference,
-        rawMisMatchPercentage: data.rawMisMatchPercentage,
-        misMatchPercentage: data.misMatchPercentage,
-        diffBounds: data.diffBounds,
-        analysisTime: data.analysisTime
+    for (let field = 0; field < escenarioslength; field++) {
+      if (!fs.existsSync(`${dir}/${escenarios[field]}`)) {
+        fs.mkdirSync(`${dir}/${escenarios[field]}`, { recursive: true });
       }
-      fs.writeFileSync(`./results/ES01/compare-${img}.png`, data.getBuffer());
-    }
-  }
 
-  fs.writeFileSync(`./results/ES01/report.html`, createReport(datetime, resultInfo));
-  fs.copyFileSync('./index.css', `./results/ES01/index.css`);
-  console.log('------------------------------------------------------------------------------------')
-  console.log("Execution finished. Check the report under the results folder")
-  return resultInfo;
+      let files = fs.readdirSync(`${directoryPath}/${escenarios[field]}`);
+
+      images = files
+        .filter(file => path.extname(file).toLowerCase() === '.png')
+        .slice(0, Math.floor(files.length / 2));
+      console.log('images', images);
+
+      for (let img = 0; img < images.length - 1; img++) {
+
+        const data = await compareImages(
+          fs.readFileSync(`${directoryPath}/${escenarios[field]}/before-${img}.png`),
+          fs.readFileSync(`${directoryPath}/${escenarios[field  + 1]}/after-${img}.png`),
+          options
+        );
+        resultInfo[b] = {
+          isSameDimensions: data.isSameDimensions,
+          dimensionDifference: data.dimensionDifference,
+          rawMisMatchPercentage: data.rawMisMatchPercentage,
+          misMatchPercentage: data.misMatchPercentage,
+          diffBounds: data.diffBounds,
+          analysisTime: data.analysisTime
+        }
+        fs.writeFileSync(`${dir}/${escenarios[field]}/compare-${img}.png`, data.getBuffer());
+      }
+
+      fs.writeFileSync(`${dir}/${escenarios[field]}/report.html`, createReport(datetime, resultInfo));
+      fs.copyFileSync('./index.css', `${dir}/${escenarios[field]}/index.css`);
+      console.log('------------------------------------------------------------------------------------')
+      console.log("Execution finished. Check the report under the results folder")
+      return resultInfo;
+    }
+
+  }
 }
 (async () => console.log(await executeTest()))();
 function browser(b, info, index) {
@@ -65,11 +77,11 @@ function browser(b, info, index) {
     `<div class="imgline">
     <div class="imgcontainer">
       <span class="imgname">Reference</span>
-      <img class="img2" src="before-${index}.png" id="refImage" label="Reference">
+      <img class="img2" src="./../../${directoryPath}/${escenarios[index * 2]}/Before-${index}.png" id="refImage" label="Reference">
     </div>
     <div class="imgcontainer">
       <span class="imgname">Test</span>
-      <img class="img2" src="after-${index}.png" id="testImage" label="Test">
+      <img class="img2" src="./../../${directoryPath}/${escenarios[index * 2 + 1]}/After-${index}.png" id="testImage" label="Test">
     </div>
   </div>
   <div class="imgline">
@@ -91,7 +103,7 @@ function createReport(datetime, resInfo) {
           <link href="index.css" type="text/css" rel="stylesheet">
       </head>
       <body>
-          <h1>Report for 
+          <h1>Report for
                <a href="${config.url}"> ${config.url}</a>
           </h1>
           <p>Executed: ${datetime}</p>
