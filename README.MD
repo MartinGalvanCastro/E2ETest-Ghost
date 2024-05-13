@@ -5,6 +5,9 @@ URL del despligue: https://ghost-al42.onrender.com
 
 Video Entega Semana 6:
 
+## Sistema de incidencias:
+https://github.com/MartinGalvanCastro/MISW-4103-Pruebas-Automatizadas/issues
+
 ## Miembros del grupo:
 
 - Martin Galvan - md.galvan@uniandes.edu.co
