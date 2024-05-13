@@ -103,6 +103,8 @@ Feature: Escearios Version 5.80.0
   @ES010
   @ES011
   Scenario Outline: Iniciar sesión, crear post, crear etiqueta, asignar etiqueta a post, validar post con etiqueta en admin
+    
+    # @ES07 - Scenario: Iniciar sesión - crear post - crear etiqueta - asignar etiqueta a post - validar post con etiqueta en admin
     Given Un usuario administrador
     When Inicia sesion
     Then Visualiza el dashboard de administrador
@@ -121,10 +123,13 @@ Feature: Escearios Version 5.80.0
     When Navega al menu de 'publish'
     Then Verifica que el post '<titulo-post>' tiene la etiqueta '<nombre-etiqueta>'
 
-    Then Verifica que el post 'Prueba-Post' tiene la etiqueta '<nombre-etiqueta>' y esten publicados en la pagina principal
 
+    # @ES010 - Scenario: Iniciar sesión - crear post - crear etiqueta - asignar etiqueta a post - validar publicación de post con etiqueta como usuario lector de post
+    Then Verifica que el post 'Prueba-Post' tiene la etiqueta '<nombre-etiqueta>' y esten publicados en la pagina principal
     When Cierra la pestana actual
 
+
+    # @ES008 - Scenario: Iniciar sesión - modificar post - validar asignación de etiqueta a post - validar post con etiqueta modificada en admin
     And Vuelve al dashboard
     When Navega al menu de 'publish'
     When Modifica el el titulo de post a 'New-ModPrueba-Post'
@@ -132,9 +137,12 @@ Feature: Escearios Version 5.80.0
     When Navega al menu de 'publish'
     Then Verifica que el post 'New-ModPrueba-Post' tiene la etiqueta 'New tag'
 
+
+    # @ES011 - Scenario: Iniciar sesión - modificar post - validar asignación de etiqueta a post - validar post con etiqueta modificada en admin
     Then Verifica que el post 'New-ModPrueba-Post' tiene la etiqueta 'New tag' y esten publicados en la pagina principal
     When Cierra la pestana actual
 
+    # @ES009 - Scenario: Iniciar sesión - modificar post - validar asignación de etiqueta a post - validar post con etiqueta modificada en admin
     And Vuelve al dashboard
     When Navega al menu de 'publish'
     When Elimina el post 'New-ModPrueba-Post'
