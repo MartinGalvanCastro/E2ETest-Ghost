@@ -3,6 +3,8 @@
 Repositorio con pruebas E2E sobre un despliegue de Ghost en Render
 URL del despligue: https://ghost-al42.onrender.com
 
+Video Entega Semana 6:
+
 ## Miembros del grupo:
 
 - Martin Galvan - md.galvan@uniandes.edu.co
