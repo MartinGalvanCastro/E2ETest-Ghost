@@ -60,7 +60,7 @@ URL del despligue: https://ghost-al42.onrender.com
     npx kraken-node run
     ```
 ## Pruebas de Regresion:
-- Como Correr:
+- Obtener Imagenes
 
 Nota: En caso de usar npm, remplazar `yarn` por `npm run`
 1. Seguir los mismos del 1 al 2 de Playwright
@@ -80,6 +80,32 @@ Nota: En caso de usar npm, remplazar `yarn` por `npm run`
    ```bash
    npm run start
    ```
+
+ - Reporte en Backstop:
+ 1. Ir a la carpeta de backstop
+ 2. Instalar dependencias 
+ ```bash
+ yarn install # O npm install
+ ```
+ 3. Setear las referencias
+ ```bash
+ yarn set_ref # O npm run set_ref
+ ```
+ 4. Generar comparaciones:
+ ```bash
+ yarn run_reg # O npm run run_reg
+ ```
+
+  - Reporte en Resemble:
+  1. Ir a la carpeta de resemble
+  2. Instalar dependencias 
+    ```bash
+    yarn install # O npm install
+    ```
+  4. Correr la comparacion:
+    ```
+    yarn start # O npm run start
+    ```
 
 ## Release:
 ```
