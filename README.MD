@@ -72,9 +72,14 @@ Nota: En caso de usar npm, remplazar `yarn` por `npm run`
    ```bash
     yarn clean:regresion
    ```
-4. Para generar los reportes correr el comando:
+4. Para generar los reportes, primero instalar las dependencias. (Se tiene que correr desde la carperta Resemble)
+  ```bash
+  npm install
   ```
-  ```
+5. Ejecutar el reporte:
+   ```bash
+   npm run start
+   ```
 
 ## Release:
 ```
