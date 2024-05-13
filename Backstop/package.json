@@ -1,0 +1,13 @@
+{
+  "name": "Backstop",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "backstopjs": "^6.3.23",
+    "lodash": "^4.17.21"
+  },
+  "scripts": {
+    "run": "backstop test  --config=\"backstop.js\" && Backstop approve"
+  }
+}
