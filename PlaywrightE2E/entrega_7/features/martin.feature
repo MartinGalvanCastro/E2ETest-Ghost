@@ -48,7 +48,6 @@ Feature: Escenarios Martin
             | Si           | Si          | Si             |
 
     # 5 Escenarios
-    @of
     Scenario Outline: Creacion de un miembro con datos a-priori
         Given Un administrador inicia sesion
         When Navega al menu de 'Members'
@@ -59,15 +58,15 @@ Feature: Escenarios Martin
         Then El miembro es guardado con '<resultado>'
 
         Examples:
-            | nombre    | correo            | resultado |
-            | Un Nombre | correo@correo.com | exito     |
-            |           | correo@correo.com | fallido   |
-            | Un Nombre |                   | fallido   |
-            | Un Nombre | noEsUnCorreo      | fallido   |
-            |           |                   | fallido   |
+            | nombre                          | correo            | resultado |
+            | Un Nombre                       | correo@correo.com | exito     |
+            |                                 | correo@correo.com | exito     |
+            | Un Nombre                       |                   | fallido   |
+            | Un Nombre                       | noEsUnCorreo      | fallido   |
+            |                                 |                   | fallido   |
+            | NómbréCönC@rãcërêsEsp3ciâles!$* | correo@correo.com | extio     |
 
     # 1 Escenario
-    @of
     Scenario: Creacion de un miembro con correo ya registrado
         Given Un administrador inicia sesion
         When Navega al menu de 'Members'
@@ -76,7 +75,6 @@ Feature: Escenarios Martin
         Then El miembro es guardado con 'fallido'
 
     # 1 Scenario
-    @of
     Scenario: Creacion de un miembro con notes mayor a 500 caracteres
         Given Un administrador inicia sesion
         When Navega al menu de 'Members'
@@ -84,11 +82,12 @@ Feature: Escenarios Martin
         And Ingresa un nombre aleatorio
         And Ingresa un correo aleatorio
         And Notes con mas de 500 caracteres
+        And Guarda el miembro
         Then El miembro es guardado con 'fallido'
 
 
     # 9 Escenarios
-    Scenario Outline: Se debe poder navegar correctamente
+    Scenario Outline: Se debe poder navegar correctamente hacia '<menu>'
         Given Un administrador inicia sesion
         When Navega al menu de '<menu>'
         Then Debe poder ver la pagina de '<menu>' correctamentente

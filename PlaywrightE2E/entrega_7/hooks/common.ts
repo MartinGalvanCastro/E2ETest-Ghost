@@ -44,6 +44,7 @@ When(
         break;
       case "Settings":
         await this.page.locator('a[data-test-nav="settings"]').click();
+        await this.page.waitForTimeout(500);
         break;
       case "Profile":
         await this.page.locator("div.gh-user-avatar").click();

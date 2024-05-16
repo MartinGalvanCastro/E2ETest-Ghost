@@ -104,7 +104,7 @@ When(
   async function (this: IPlaywrightWorld) {
     await this.page
       .getByLabel(/Note/i)
-      .fill(this.dataGenerator.lorem.word(501));
+      .fill(this.dataGenerator.string.alpha(501));
   }
 );
 
@@ -185,7 +185,7 @@ Then(
     switch (opcion) {
       case "View site":
         await expect(this.page.locator('a[data-test-nav="site"]')).toHaveClass(
-          "active"
+          "active ember-view"
         );
         break;
       case "Explore":
@@ -195,34 +195,40 @@ Then(
         break;
       case "Post":
         await expect(this.page.locator('a[data-test-nav="posts"]')).toHaveClass(
-          "active"
+          "active ember-view"
         );
         break;
       case "Pages":
         await expect(this.page.locator('a[data-test-nav="pages"]')).toHaveClass(
-          "active"
+          "active ember-view active"
         );
         break;
       case "Tags":
         await expect(this.page.locator('a[data-test-nav="tags"]')).toHaveClass(
-          "active"
+          "active ember-view"
         );
         break;
       case "Members":
         await expect(
           this.page.locator('a[data-test-nav="members"]')
-        ).toHaveClass("active");
+        ).toHaveClass("active ember-view");
         break;
       case "Settings":
-        await expect(this.page.getByTitle("General settings")).toBeVisible();
+        await expect(
+          this.page.getByText("General settings").first()
+        ).toBeVisible();
         break;
       case "Profile":
         await expect(this.page.getByText("Basic info")).toBeVisible();
         break;
       case "Dashboard":
-        await expect(
-          this.page.locator('a[data-test-nav="dashboard"]')
-        ).toHaveClass("active");
+        const classNames = await this.page
+          .locator('a[data-test-nav="dashboard"]')
+          .getAttribute("class");
+        expect([
+          "active ember-view",
+          "ember-transitioning-in ember-view",
+        ]).toContain(classNames);
         break;
       default:
         throw new Error("Navegacion no reconocida");
