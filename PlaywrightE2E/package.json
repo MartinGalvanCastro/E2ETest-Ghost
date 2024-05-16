@@ -25,6 +25,7 @@
     "cucumber:580": "npm run cucumber --tags=\"@580\"",
     "cucumber:342": "npm run cucumber --tags=\"@342\"",
     "regresion": "cucumber-js --config=\"cucumber-reg.cjs\"",
+    "entrega_datos": "cucumber-js --config=\"cucumber-e7.cjs\"",
     "clean:regresion": "rm -rf ../screenshots/*"
   }
 }
