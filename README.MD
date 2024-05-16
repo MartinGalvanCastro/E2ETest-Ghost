@@ -20,6 +20,29 @@ https://github.com/MartinGalvanCastro/MISW-4103-Pruebas-Automatizadas/issues
 - Entrega 5: https://github.com/MartinGalvanCastro/E2ETest-Ghost/wiki
 - Entrega 6:
 
+## Instrucciones Entrega 7:
+
+- Requierimientos:
+
+    - Node 20.12.2
+    - yarn 1.22.19 o npm 10.5.0 (Se recomienda yarn)
+
+  - Como correr?
+    Los comandos se deben correr desde la carpeta PlaywrightE2E
+
+    1. Instalar Dependencias
+
+    ```bash
+    cd PlaywrightE2E # En caso de no estar en la carpeta
+    yarn # O npm install
+    ```
+
+    2. Correr (En caso de usar npm, remplazar yarn por npm run)
+
+    ```bash
+    yarn entrega_datos # Correr sin abrir navegador
+    ```
+
 ## Instrucciones de instalacion:
 
 - Playwright:
