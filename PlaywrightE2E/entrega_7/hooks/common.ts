@@ -6,6 +6,10 @@ Before(async function (this: IPlaywrightWorld) {
   await this.init("5.80.0");
 });
 
+After(async function (this: IPlaywrightWorld) {
+  await this.teardown();
+});
+
 Given(
   "Un administrador inicia sesion",
   async function (this: IPlaywrightWorld) {
@@ -17,8 +21,17 @@ Given(
     await this.page.getByLabel("Password").fill(this.adminPassword);
     await this.page.getByRole("button", { name: /Sign in/i }).click();
     await this.page.waitForURL(`${this.baseUrl}/ghost/#/dashboard`);
+    await this.page.waitForTimeout(2 * 1000);
   }
 );
+
+Given(
+  "Un usuario lector",
+  async function (this: IPlaywrightWorld) {
+    await this.page.goto("/");
+    await this.page.waitForURL(`${this.baseUrl}`);
+  }
+)
 
 When(
   "Navega al menu de {string}",
