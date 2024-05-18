@@ -1,4 +1,29 @@
-Feature: Editar Metadata
+Feature: Escenarios Juan Sebastian
+
+  Scenario: Ingresar en el campo de locksite una contraseña de 5 caracteres, despues de habilitar la contraseña
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de locksite está cargado
+    And el usuario hace clic en el botón "Edit" de locksite
+    Then el usuario hace click en habilitar contraseña
+    And el usuario ingresa una contraseña de 5 caracteres
+    Then el usuario presiona el botón "Save" de locksite
+
+  Scenario: Ingresar en el campo de locksite una contraseña de 65535 caracteres, despues de habilitar la contraseña
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de locksite está cargado
+    And el usuario hace clic en el botón "Edit" de locksite
+    Then el usuario hace click en habilitar contraseña
+    And el usuario ingresa una contraseña de 65535 caracteres
+    Then el usuario presiona el botón "Save" de locksite
+
+  Scenario: Ingresar en el campo de locksite una contraseña de 0 caracteres, despues de habilitar la contraseña
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de locksite está cargado
+    And el usuario hace clic en el botón "Edit" de locksite
+    Then el usuario hace click en habilitar contraseña
+    And el usuario ingresa una contraseña de 0 caracteres
+    Then el usuario presiona el botón "Save" de locksite
+
 
   Scenario: Veficicar que los campos de Social Accounts, facebook y twitter no contengan caracteres
     Given el usuario inicia sesión y navega a la página de configuración
@@ -92,3 +117,113 @@ Feature: Editar Metadata
     And el usuario ingresa "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin at tortor velitdLorem ipsum dolor sit amet, consectetur adipiscing elit. jdwddwdwdwdwdw" en el campo "Site title"
     And el usuario ingresa "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin at tortor velitdLorem ipsum dolor sit amet, consectetur adipiscing elit. jdwddwdwdwdwdw adipiscing elit. jdwddwdwdwdwdwLorem ipsum dolori" en el campo "Site description"
     And el usuario guarda los cambios
+
+
+  Scenario: Ingresar en el campo de Language ningun caracter
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de language está cargado
+    When el usuario hace clic en el botón "Edit" de Language
+    Then el usuario ingresa "" en el campo de language
+    And el usuario presiona el botón "Save" de Language
+
+  Scenario: Ingresar en el campo de Language las letras "en" para poner el idioma en ingles
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de language está cargado
+    When el usuario hace clic en el botón "Edit" de Language
+    Then el usuario ingresa "en" en el campo de language
+    And el usuario presiona el botón "Save" de Language
+
+  Scenario: Ingresar en el campo de Language 65535 caracteres
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de language está cargado
+    When el usuario hace clic en el botón "Edit" de Language
+    Then el usuario ingresa 65535 caracteres en el campo de language
+    And el usuario presiona el botón "Save" de Language
+
+  Scenario: Ingresar en el campo de Language 65536 caracteres
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de language está cargado
+    When el usuario hace clic en el botón "Edit" de Language
+    Then el usuario ingresa 65536 caracteres en el campo de language
+    And el usuario presiona el botón "Save" de Language
+
+  Scenario: Ingresar en el campo de Metadata ningun caracter en meta title y ningun caracter en meta description
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de Metadata está cargado
+    Then el usuario hace clic en el botón "Edit" de Metadata
+    And el usuario deja Meta title vacío
+    Then el usuario deja Meta description vacío
+    And el usuario presiona el botón "Save" de Metadata
+
+  Scenario: Ingresar en el campo de Metadata 10 caracteres en meta title y ningun caracter en meta description
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de Metadata está cargado
+    Then el usuario hace clic en el botón "Edit" de Metadata
+    And el usuario pone 10 caracteres Meta title
+    Then el usuario deja Meta description vacío
+    And el usuario presiona el botón "Save" de Metadata
+
+  Scenario: Ingresar en el campo de Metadata 10 caracteres en meta title y 10 caracteres en meta description
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de Metadata está cargado
+    Then el usuario hace clic en el botón "Edit" de Metadata
+    And el usuario pone 10 caracteres Meta title
+    Then el usuario pone 10 caracteres Meta description
+    And el usuario presiona el botón "Save" de Metadata
+
+  Scenario: Ingresar en el campo de Metadata ningun caracter en meta title y 10 caracteres en meta description
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de Metadata está cargado
+    Then el usuario hace clic en el botón "Edit" de Metadata
+    And el usuario deja Meta title vacío
+    Then el usuario pone 10 caracteres Meta description
+    And el usuario presiona el botón "Save" de Metadata
+
+  Scenario: Ingresar en el campo de Metadata 300 caracteres en meta title y 10 caracteres en meta description
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de Metadata está cargado
+    Then el usuario hace clic en el botón "Edit" de Metadata
+    And el usuario pone 300 caracteres Meta title
+    Then el usuario pone 10 caracteres Meta description
+    And el usuario presiona el botón "Save" de Metadata
+
+  Scenario: Ingresar en el campo de Metadata 10 caracteres en meta title y 500 caracteres en meta description
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de Metadata está cargado
+    Then el usuario hace clic en el botón "Edit" de Metadata
+    And el usuario pone 10 caracteres Meta title
+    Then el usuario pone 500 caracteres Meta description
+    And el usuario presiona el botón "Save" de Metadata
+
+  Scenario: Ingresar en el campo de Metadata 300 caracteres en meta title y 500 caracteres en meta description
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de Metadata está cargado
+    Then el usuario hace clic en el botón "Edit" de Metadata
+    And el usuario pone 300 caracteres Meta title
+    Then el usuario pone 500 caracteres Meta description
+    And el usuario presiona el botón "Save" de Metadata
+
+  Scenario: Ingresar en el campo de Metadata 301 caracteres en meta title y 500 caracteres en meta description
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de Metadata está cargado
+    Then el usuario hace clic en el botón "Edit" de Metadata
+    And el usuario pone 301 caracteres Meta title
+    Then el usuario pone 500 caracteres Meta description
+    And el usuario presiona el botón "Save" de Metadata
+
+  Scenario: Ingresar en el campo de Metadata 301 caracteres en meta title y 501 caracteres en meta description
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de Metadata está cargado
+    Then el usuario hace clic en el botón "Edit" de Metadata
+    And el usuario pone 301 caracteres Meta title
+    Then el usuario pone 501 caracteres Meta description
+    And el usuario presiona el botón "Save" de Metadata
+
+  Scenario: Ingresar en el campo de Metadata 300 caracteres en meta title y 501 caracteres en meta description
+    Given el usuario inicia sesión y navega a la página de configuración
+    Then el formulario de Metadata está cargado
+    Then el usuario hace clic en el botón "Edit" de Metadata
+    And el usuario pone 300 caracteres Meta title
+    Then el usuario pone 501 caracteres Meta description
+    And el usuario presiona el botón "Save" de Metadata
+
