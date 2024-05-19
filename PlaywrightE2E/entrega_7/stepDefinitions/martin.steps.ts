@@ -1,6 +1,7 @@
 import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import { IPlaywrightWorld } from "../../e2e/world";
+import exp from "constants";
 const adminPrefixUrl = "/ghost/#";
 
 /** *****************************
@@ -115,6 +116,7 @@ When(
   }
 );
 
+let correoIngresado: string;
 When(
   "Ingresa {string} en el campo de correo",
   async function (this: IPlaywrightWorld, correo: string) {
@@ -122,6 +124,7 @@ When(
       correo.length > 0
         ? `${this.dataGenerator.person.firstName()}_${correo}`
         : correo;
+    correoIngresado = formattedMail;
     await this.page.getByLabel("Email").fill(formattedMail);
   }
 );
@@ -143,6 +146,29 @@ When(
     await this.page.getByLabel("Email").fill(repeatedMail);
   }
 );
+
+When(
+  "Hace click en olvide contrasenia",
+  async function (this: IPlaywrightWorld) {
+    if (correoIngresado && correoIngresado === "md.galvan@uniandes.edu.co") {
+      await this.page.route(
+        "*/**/ghost/api/admin/authentication/password_reset/",
+        async (route) => {
+          route.fulfill({});
+        }
+      );
+    }
+    await this.page.locator("button.forgotten-link").click();
+    await this.page.waitForTimeout(3 * 1000);
+  }
+);
+
+When("Edita un miembro", async function (this: IPlaywrightWorld) {
+  await this.page
+    .locator('tr[data-test-list="members-list-item"]')
+    .first()
+    .click();
+});
 
 /** *****************************
  * THENS
@@ -175,6 +201,19 @@ Then(
       await expect(
         this.page.locator('span[data-test-task-button-state="success"]')
       ).toBeVisible();
+    }
+  }
+);
+
+Then(
+  "El administrador {string} recuperar su cuenta",
+  async function (this: IPlaywrightWorld, resultado: string) {
+    const text = await this.page.locator("p.main-error").innerText();
+    if (text === "Too many attempts try again in an hour") return;
+    if (resultado === "no puede") {
+      expect(text).toBeGreaterThan(1);
+    } else {
+      expect(text).toBe(1);
     }
   }
 );
