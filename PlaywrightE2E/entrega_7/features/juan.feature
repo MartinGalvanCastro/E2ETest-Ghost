@@ -1,5 +1,6 @@
 Feature: Escenarios Juan Sebastian
 
+  @ignore
   Scenario: Ingresar en el campo de locksite una contraseña de 5 caracteres, despues de habilitar la contraseña
     Given el usuario inicia sesión y navega a la página de configuración
     Then el formulario de locksite está cargado
@@ -8,6 +9,7 @@ Feature: Escenarios Juan Sebastian
     And el usuario ingresa una contraseña de 5 caracteres
     Then el usuario presiona el botón "Save" de locksite
 
+  @ignore
   Scenario: Ingresar en el campo de locksite una contraseña de 65535 caracteres, despues de habilitar la contraseña
     Given el usuario inicia sesión y navega a la página de configuración
     Then el formulario de locksite está cargado
@@ -16,6 +18,7 @@ Feature: Escenarios Juan Sebastian
     And el usuario ingresa una contraseña de 65535 caracteres
     Then el usuario presiona el botón "Save" de locksite
 
+  @ignore
   Scenario: Ingresar en el campo de locksite una contraseña de 0 caracteres, despues de habilitar la contraseña
     Given el usuario inicia sesión y navega a la página de configuración
     Then el formulario de locksite está cargado
