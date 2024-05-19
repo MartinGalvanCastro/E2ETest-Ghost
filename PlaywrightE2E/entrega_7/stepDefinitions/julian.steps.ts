@@ -60,6 +60,37 @@ When("Guarda la page", async function (this: IPlaywrightWorld) {
   await this.page.waitForTimeout(2000);
 });
 
+// Editar perfil
+
+// Editar perfil: Nombre de usuario
+When(
+  "Ingresa {string} en el campo de nombre de usuario",
+  async function (this: IPlaywrightWorld, nombre_usuario: string) {
+    await this.page.getByLabel("Full name").fill(nombre_usuario);
+    // const nombreInput = this.page.locator('input#\\:r1q\\:');
+    // await nombreInput.fill(nombre_usuario);
+  }
+);
+
+// Editar perfil: Email
+When(
+  "Ingresa {string} en el campo de email",
+  async function (this: IPlaywrightWorld, email: string) {
+    await this.page.getByLabel("Email").fill(email);
+    // const emailInput = this.page.locator('input#\\:r1r\\:');
+    // await emailInput.fill(email);
+  }
+);
+
+// Guardar los cambios
+When(
+  "Guarda los cambios en el perfil",
+  async function (this: IPlaywrightWorld) {
+    await this.page.getByLabel("Slug").click();
+    // await this.page.locator('button:has-text("Save")').click(); // Ajusta el selector según sea necesario
+  }
+);
+
 /** *****************************
  * THENS
  ****************************** */
@@ -83,6 +114,19 @@ Then(
       await expect(this.page.getByText("Ready, set, publish.")).toBeVisible();
     } else {
       await expect(this.page.getByText("Validation failed")).toBeVisible();
+    }
+  }
+);
+
+// Validar resultado de nombre de usuario
+Then(
+  "El perfil es actualizado con {string}",
+  async function (this: IPlaywrightWorld, resultado: string) {
+    const textoResultado = await this.page
+      .locator('span:has-text("' + resultado + '")')
+      .isVisible();
+    if (!textoResultado) {
+      throw new Error(`El resultado esperado no fue encontrado: ${resultado}`);
     }
   }
 );

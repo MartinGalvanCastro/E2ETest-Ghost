@@ -44,8 +44,7 @@ Feature: Funcionalidades de Ghost para Crear Post, Crear Page y Editar Perfil
       | Título muy largo que excede el límite permitidoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo | Contenido del post | fallido   |
 
 
-
- # 9 Escenarios para Crear Page
+  # 9 Escenarios para Crear Page
   Scenario Outline: Crear Page con diferentes títulos y cuerpos
     When Navega al menu de 'Pages'
     And Crea una nueva page
@@ -81,3 +80,26 @@ Feature: Funcionalidades de Ghost para Crear Post, Crear Page y Editar Perfil
       | titulo                             | cuerpo                | resultado |
       | Título muy largo que excede el límite permitidoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo | Contenido de la page | fallido   |
 
+
+
+  # 10 Escenarios para Editar Perfil
+@julian
+Scenario Outline: Editar perfil con diferentes datos
+  When Navega al menu de 'Profile'
+  And Ingresa '<nombre_usuario>' en el campo de nombre de usuario
+  And Ingresa '<email>' en el campo de email
+  And Guarda los cambios en el perfil
+  Then El perfil es actualizado con '<resultado>'
+
+  Examples:
+    | nombre_usuario                        | email                               | resultado                   |
+    | NuevoUsuario                          | nuevo@correo.com                    | Use real name so people can recognize you |
+    |                                       | nuevo@correo.com                    | Name is required            |
+    | NombreMuyLargooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooQueExcedeElLimitePermitido | nuevo@correo.com                    | Name is too long            |
+    | UsuarioCon@Especial                   | nuevo@correo.com                    | Use real name so people can recognize you |
+    | Usuario123                            | nuevo@correo.com                    | Use real name so people can recognize you |
+    | Usuario😊                             | nuevo@correo.com                    | Use real name so people can recognize you |
+    | NuevoUsuario                          |                                      | Please enter a valid email address |
+    | NuevoUsuario                          | correo invalido                     | Please enter a valid email address |
+    | NuevoUsuario                          | correo_muy_largoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_que_excede_el_limite@correo.com | Please enter a valid email address |
+    | NuevoUsuario                          | valido@correo.com#$%                | Please enter a valid email address |
