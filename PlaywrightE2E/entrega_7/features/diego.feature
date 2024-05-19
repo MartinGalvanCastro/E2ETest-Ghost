@@ -5,10 +5,10 @@ Feature: Escenarios Diego
         Given Un administrador inicia sesion
         When Navega al menu de 'Tags'
         And Crea un nuevo tag
-        And Ingresa un nombre aleatorio
+        And Ingresa un nombre aleatorios
         And '<ingresaColor>' ingresa un color
         And '<modificaSlug>' modifica el slug
-        And '<ingresaDescripcion>' ingresa una descripcion
+        And '<ingresaDescripcion>' ingresa una - descripcion
         And Guarda el tag 
         Then El tag es guardado con 'exito'
 
@@ -43,7 +43,7 @@ Feature: Escenarios Diego
         Given Un administrador inicia sesion
         When Navega al menu de 'Tags'
         And Crea un nuevo tag
-        And Ingresa un nombre aleatorio
+        And Ingresa un nombre aleatorios
         And ingresa el color '<color>'
         And Guarda el tag
         Then El tag es guardado con '<resultado>'

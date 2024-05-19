@@ -6,9 +6,9 @@ Before(async function (this: IPlaywrightWorld) {
   await this.init("5.80.0");
 });
 
-After(async function (this: IPlaywrightWorld) {
-  await this.teardown();
-});
+// After(async function (this: IPlaywrightWorld) {
+//   await this.teardown();
+// });
 
 Given(
   "Un administrador inicia sesion",
