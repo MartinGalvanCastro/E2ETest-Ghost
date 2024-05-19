@@ -19,14 +19,24 @@ function generateLongString(length: number): string {
 When("Crea un nuevo post", async function (this: IPlaywrightWorld) {
   await this.page.getByTitle("New post").click();
   await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/editor/**`);
-  // await this.page.locator('a[data-test-new-post-button="true"]').click();
-  // await this.page.waitForURL(`${adminPrefixUrl}/editor/post`);
+});
+
+When("Crea una nueva page", async function (this: IPlaywrightWorld) {
+  await this.page.locator("[data-test-new-page-button]").click();
+  await this.page.waitForURL(`${this.baseUrl}${adminPrefixUrl}/editor/**`);
 });
 
 When(
   "Ingresa {string} en el campo de título",
   async function (this: IPlaywrightWorld, titulo: string) {
     await this.page.getByPlaceholder("Post title").fill(titulo);
+  }
+);
+
+When(
+  "Ingresa {string} en el campo de título de pagina",
+  async function (this: IPlaywrightWorld, titulo: string) {
+    await this.page.getByPlaceholder("Page title").fill(titulo);
   }
 );
 
@@ -45,11 +55,28 @@ When("Guarda el post", async function (this: IPlaywrightWorld) {
   await this.page.waitForTimeout(2000);
 });
 
+When("Guarda la page", async function (this: IPlaywrightWorld) {
+  await this.page.getByRole("button", { name: /Publish/i }).click();
+  await this.page.waitForTimeout(2000);
+});
+
 /** *****************************
  * THENS
  ****************************** */
 Then(
   "El post es guardado con {string}",
+  async function (this: IPlaywrightWorld, resultado: string) {
+    const esExitoso = resultado === "exito";
+    if (esExitoso) {
+      await expect(this.page.getByText("Ready, set, publish.")).toBeVisible();
+    } else {
+      await expect(this.page.getByText("Validation failed")).toBeVisible();
+    }
+  }
+);
+
+Then(
+  "La page es guardada con {string}",
   async function (this: IPlaywrightWorld, resultado: string) {
     const esExitoso = resultado === "exito";
     if (esExitoso) {
