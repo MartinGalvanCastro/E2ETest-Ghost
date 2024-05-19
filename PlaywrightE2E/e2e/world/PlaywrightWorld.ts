@@ -68,9 +68,9 @@ class PlaywrightWorld extends World implements IPlaywrightWorld {
     }
     this.version = version;
     this.baseUrl = url;
-    const headless = process.env.HEAD !== "1" || true;
+    const headless = process.env.HEAD !== "1";
     this.browser = await chromium.launch({
-      headless: false,
+      headless: headless,
     });
     this.browserContext = await this.browser.newContext({
       baseURL: url,

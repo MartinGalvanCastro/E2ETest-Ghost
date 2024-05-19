@@ -86,6 +86,59 @@ Feature: Escenarios Martin
         Then El miembro es guardado con 'fallido'
 
 
+    # 5 Escenarios
+    @at
+    Scenario: Recuperar contrasenia datos a-priori
+        Given Un usuario que desea iniciar sesion
+        When Ingresa '<correo>' en el campo correo
+        And Hace click en olvide contrasenia
+        Then El administrador '<resultado>' recuperar su cuenta
+
+        Examples:
+            | correo                    | resultado |
+            | md.galvan@uniandes.edu.co | puede     |
+            | md.galvan                 | no puede  |
+            |                           | no puede  |
+            | @$#                       | no puede  |
+            | noEsElCorreo@correo.com   | no puede  |
+
+
+    # 8 Escenarios
+    Scenario Outline: Edicion de un miembro con y sin campos opcionales
+        Given Un administrador inicia sesion
+        When Navega al menu de 'Members'
+        And Edita un miembro
+        And Ingresa un nombre aleatorio
+        And Ingresa un correo aleatorio
+        And '<ingresaLabel>' ingresa un label
+        And '<ingresaNote>' ingresa una note
+        And '<estaHabilidado>' habilia los newsletter
+        And Guarda el miembro
+        Then El miembro es guardado con 'exito'
+
+        Examples:
+            | ingresaLabel | ingresaNote | estaHabilidado |
+            | No           | No          | No             |
+            | No           | No          | Si             |
+            | No           | Si          | No             |
+            | No           | Si          | Si             |
+            | Si           | No          | No             |
+            | Si           | No          | Si             |
+            | Si           | Si          | No             |
+            | Si           | Si          | Si             |
+
+    # 1 Scenario
+    Scenario: Creacion de un miembro con notes mayor a 500 caracteres
+        Given Un administrador inicia sesion
+        When Navega al menu de 'Members'
+        And Edita un miembro
+        And Ingresa un nombre aleatorio
+        And Ingresa un correo aleatorio
+        And Notes con mas de 500 caracteres
+        And Guarda el miembro
+        Then El miembro es guardado con 'fallido'
+
+
     # 9 Escenarios
     Scenario Outline: Se debe poder navegar correctamente hacia '<menu>'
         Given Un administrador inicia sesion
