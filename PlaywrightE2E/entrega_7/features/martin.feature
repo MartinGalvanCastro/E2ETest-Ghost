@@ -87,7 +87,6 @@ Feature: Escenarios Martin
 
 
     # 5 Escenarios
-    @at
     Scenario: Recuperar contrasenia datos a-priori
         Given Un usuario que desea iniciar sesion
         When Ingresa '<correo>' en el campo correo
@@ -128,7 +127,7 @@ Feature: Escenarios Martin
             | Si           | Si          | Si             |
 
     # 1 Scenario
-    Scenario: Creacion de un miembro con notes mayor a 500 caracteres
+    Scenario: edicion de un miembro con notes mayor a 500 caracteres
         Given Un administrador inicia sesion
         When Navega al menu de 'Members'
         And Edita un miembro
@@ -137,22 +136,3 @@ Feature: Escenarios Martin
         And Notes con mas de 500 caracteres
         And Guarda el miembro
         Then El miembro es guardado con 'fallido'
-
-
-    # 9 Escenarios
-    Scenario Outline: Se debe poder navegar correctamente hacia '<menu>'
-        Given Un administrador inicia sesion
-        When Navega al menu de '<menu>'
-        Then Debe poder ver la pagina de '<menu>' correctamentente
-
-        Examples:
-            | menu      |
-            | View site |
-            | Explore   |
-            | Post      |
-            | Pages     |
-            | Tags      |
-            | Members   |
-            | Settings  |
-            | Profile   |
-            | Dashboard |

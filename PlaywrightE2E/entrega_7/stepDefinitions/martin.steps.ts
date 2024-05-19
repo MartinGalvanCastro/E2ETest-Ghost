@@ -211,9 +211,9 @@ Then(
     const text = await this.page.locator("p.main-error").innerText();
     if (text === "Too many attempts try again in an hour") return;
     if (resultado === "no puede") {
-      expect(text).toBeGreaterThan(1);
+      expect(text.length).toBeGreaterThan(1);
     } else {
-      expect(text).toBe(1);
+      expect(text.length).toBe(1);
     }
   }
 );
